@@ -1,0 +1,7 @@
+energy = 10;
+h = 8e4;
+mu = 4e5;
+a = -mu/(2*energy);
+num = 2*10*(8e4)^2;
+denom = (
+e = sqrt(1 + ((2*10*(8e4)^2)/(4e5)^2));

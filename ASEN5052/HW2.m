@@ -1,0 +1,12 @@
+energy = 10;
+h = 8e4;
+mu = 4e5;
+a = -mu/(2*energy);
+num = 2*10*(8e4)^2;
+denom = (4e5)^2;
+ecc = sqrt(1 + (num/denom));
+p = a*(1-ecc^2);
+f_inf = acos(-1/ecc);
+delta = f_inf - (pi - f_inf);
+V_inf = sqrt(2*energy);
+b_inf = h/V_inf;
