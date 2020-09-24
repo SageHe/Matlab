@@ -1,0 +1,14 @@
+function [out] = CA_Gen(in,G2)
+if in == 19
+    PS = xor(G2(3), G2(6));
+elseif in == 25
+    PS = xor(G2
+for i = 1:1023
+    temp = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
+    G2out(i) = G2(end);
+%     PS = xor(G2(3),G2(6));
+    CA_PRN_19(i) = xor(PS,G1(end));
+    G1out(i) = G1(end);
+    G1 = [xor(G1(3),G1(10)) G1(1:9)];
+    G2 = [rem(sum(temp),2) G2(1:9)];
+end

@@ -1,0 +1,64 @@
+clear all;close all;clc
+%Question 2.1, part a -- Create entire 1023-chip C/A code for PRN 19 as a
+%vector. Plot first 16 and last 16 chips of code. Express in hex, check
+%that first 16 chips of PRN 19 are E6D6 in hex.
+%Start with G1 and G2 registers as all 1's
+G1 = ones(1,10);
+G2 = ones(1,10);
+%PRN 19 uses phase selection 3 & 6
+for i = 1:1023
+    temp = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
+    G2out(i) = G2(end);
+    PS = xor(G2(3),G2(6));
+    CA(i) = xor(PS,G1(end));
+    G1out(i) = G1(end);
+    G1 = [xor(G1(3),G1(10)) G1(1:9)];
+    G2 = [rem(sum(temp),2) G2(1:9)];
+end
+figure
+subplot(1,2,1)
+plot(CA(1:16),'*')
+title('First 16 bits of PRN 19')
+subplot(1,2,2)
+plot(CA(1008:end),'*')
+title('Last 16 bits of PRN 16')
+%Part b -- do agin for epoch 1024-2046 and compare 1023-element vector or one
+%from part a (should be exact same?
+for i = 1:1023
+    temp = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
+    G2out(i) = G2(end);
+    PS = xor(G2(3),G2(6));
+    CA2(i) = xor(PS,G1(end));
+    G1out(i) = G1(end);
+    G1 = [xor(G1(3),G1(10)) G1(1:9)];
+    G2 = [rem(sum(temp),2) G2(1:9)];
+end
+%Part c -- repeat part a for PRN 25 -> use phase selection of 5 and 7
+G1 = ones(1,10);
+G2 = ones(1,10);
+for i = 1:1023
+    temp = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
+    G2out(i) = G2(end);
+    PS = xor(G2(5),G2(7));
+    CA_PRN_25(i) = xor(PS,G1(end));
+    G1out(i) = G1(end);
+    G1 = [xor(G1(3),G1(10)) G1(1:9)];
+    G2 = [rem(sum(temp),2) G2(1:9)];
+end
+subpl
+figure
+plot(CA_PRN_25(1:16),'*')
+%Part d -- repeat part a for PRN 5 -> use phase selection of 1 and 5
+G1 = ones(1,10);
+G2 = ones(1,10);
+for i = 1:1023
+    temp = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
+    G2out(i) = G2(end);
+    PS = xor(G2(1),G2(9));
+    CA_PRN_5(i) = xor(PS,G1(end));
+    G1out(i) = G1(end);
+    G1 = [xor(G1(3),G1(10)) G1(1:9)];
+    G2 = [rem(sum(temp),2) G2(1:9)];
+end
+figure
+plot(CA_PRN_5(1:16),'*')

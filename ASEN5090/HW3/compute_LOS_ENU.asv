@@ -1,0 +1,6 @@
+function out = compute_LOS_ENU(userECEF,satECEF,ECEF2ENU)
+vec = satECEF - userECEF;
+lla_vec = ecef2lla(vec);
+ECEF2ENU = calcECEF2ENU(lla_vec(1),lla_vec(2));
+vec = ECEF2ENU*vec;
+out = vec;end

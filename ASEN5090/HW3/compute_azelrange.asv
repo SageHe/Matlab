@@ -1,0 +1,5 @@
+function out = compute_azelrange(userECEF,satECEF)
+LOS_ENU = compute_LOS_ENU(userpos_ECEF,satECEF);
+az = atand(LOS_ENU(1)/LOS_ENU(2));
+el = asind(
+end
