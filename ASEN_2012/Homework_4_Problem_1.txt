@@ -1,0 +1,13 @@
+Distance traveled using trapezoid rule and 10 evenly spaced subintervals = 68.3200 meters 
+
+Distance traveled using trapezoid rule and 100 evenly spaced subintervals = 68.3200 meters 
+
+Distance traveled using Simpsons rule and 10 evenly spaced subintervals = 68.0000 meters 
+
+Distance traveled using Simpsons rule and 10 evenly spaced subintervals = 68.0000 meters 
+
+The trapezoid rule gave a good approximation to the distance traveled by the object by using both 10 and 100 evenly spaced subintervals, 
+however Simpsons rule gave a better approximation using both 10 and 100 evenly spaced subintervals since the Simpson approximation was exact in this case.
+Looking at the trapezoid approximation, using a larger number of evenly spaced subintervals results in a better approximation of the area under the curve,
+which can be seen by examining the difference between the exact answer and the approximated answer using the trapezoid rule with 10 
+evenly spaced subintervals vs 100 evenly spaced subintervals.

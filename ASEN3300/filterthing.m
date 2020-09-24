@@ -1,0 +1,1 @@
+freqz(filt1.tf.num,filt1.tf.den,1000,120e3)

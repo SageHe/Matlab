@@ -1,0 +1,25 @@
+clear; close all;clc
+%Define given constants in order to convert CT LTI to DT LTI
+g = 9.81; %m/s^2
+l = 1; %meters
+m = 1; % Kg
+M = 2; %Kg
+deltat = 0.05; %seconds
+%Define A and B matries to form augmented matrix in order to determin F and
+%G matrices using matrix exponential (expm function)
+A = [0 1 0 0;0 0 (m*g)/M 0;0 0 0 1;0 0 ((g/l)/(1 - (m/(M+m)))) 0];
+
+B = [0; 1/M; 0; 1/(M*l)];
+
+Ahat = [A B];
+Ahat = [Ahat;zeros(1,5)];
+
+%Use matrix exponential to compute F and G
+matexp = expm(Ahat*deltat);
+%Pull F and G matrices out of matexp
+F = matexp([1:4],[1:4]);
+G = matexp([1:4],end);
+%Determine stability of system by observing eigenvalues of F
+[V,D] = eig(F);
+D
+%Since th

@@ -1,0 +1,2 @@
+The straight line fit is given by the equation y = -1.2866X + 1.7429 with an uncertainty of .6094. Beta naught had an uncetainty of .3767. Beta 1 had an uncertainty of .2511 
+The best quadratic polynomial fit had the form y = 1.3273 - 1.0545t + .1818t^2. Beta2 had an uncertainty of 1.3273, Beta3 had an uncertainty of .1377. Beta4 had an uncertainty of .1141 

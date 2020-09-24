@@ -1,0 +1,8 @@
+The estimated area under the curve using the midpoint rule on [-2,2] with a .5 spacing was 2.75 square units. 
+By speculation of the plotted rectangles and the precise curve of the given function, it appears that 
+the leftmost rectangle is the gretest source of error since it seems that that rectangle has 
+the most area lying outside the precise curve of the function, resulting in the largest amount of area 
+that is not actually under the curve. This extra area is error in the estimation 
+
+The precise graph of the curve was obtained by plotting the given function against x, where 
+x had a small stepsize of .001.

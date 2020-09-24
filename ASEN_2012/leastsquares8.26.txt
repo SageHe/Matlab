@@ -1,0 +1,8 @@
+The materials mean life tau was calculated as -42.17520 with an uncertainty of 0.00143 
+
+t values: 
+ 10 40 70 100 130 160 
+v values: 
+ 188 102 60 18 16 5 
+z=ln(v): 
+ 5.236 4.625 4.094 2.890 2.773 1.609Prof. Jacksons method was used in this problem, so there are no sums to display for this problem

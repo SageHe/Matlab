@@ -1,0 +1,3 @@
+Euler Explicit solution yields y = 20.892904 @ x = 2 
+Runge Kutta solution yields y = 26.555990 @ x = 2 
+Analytical solution yields y = 26.556224 @ x = 2 

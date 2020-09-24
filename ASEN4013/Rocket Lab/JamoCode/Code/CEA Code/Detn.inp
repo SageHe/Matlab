@@ -1,0 +1,14 @@
+problem  rocket eq
+ 
+p,psia=   404.10  
+supar=   3.6503  
+reactants 
+reac  oxid NH4CLO4(I)  wt%=80.000000   t(r)= 536.00    h(cal/mol)=   0.00
+           
+      oxid AL(cr)  wt%=10.000000   t(r)= 536.00    h(cal/mol)=   0.00
+           
+      fuel C4H6,butadiene  wt%=10.000000   t(r)= 536.00    h(cal/mol)=   0.00
+           
+
+output transport massf plot isp ivac cp p t gam m 
+end

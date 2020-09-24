@@ -1,0 +1,101 @@
+close all
+clear all
+clc
+
+t(1) = 0; % [s] initial time
+rb_i = (0.177/2)*.0254; % [m] initial burn grain displacement
+figure(1)
+hold on
+T_claimed = csvread('Thrust.csv');
+plot(T_claimed(:,1),T_claimed(:,2))
+%% INPUTS
+cstar_eff = 0.85; % [-], cstar efficiency
+t_step = 0.01; % [s] time step
+P_atm = 101325; % [Pa] ambient pressure
+a = 7.4727e-5; % [-] burn rate coefficient
+n = 0.321; % [-] burn rate exponent
+cstar = 1500; % [m/s] characteristic velocity
+h_grain = 1.505; % [in] motor grain height
+r_grain = 0.908/2; % [in] motor grain radius
+r_throat = 0.123/2; % [in] throat radius
+r_exit = 0.235/2; % [in] exit radius
+Mass = ((pi*(0.0230632/2)^2*0.038227)-(pi*(0.0044958/2)^2)*0.038227)*1625.087206; % [kg] m = rho*V, V = pi*r^2*h
+
+%% CONVERSIONS
+h_grain = h_grain*0.0254; % [m] motor grain height
+r_grain = r_grain*0.0254; % [m] motor grain radius
+r_throat = r_throat*0.0254; % [m] throat radius
+r_exit = r_exit*0.0254; % [m] exit radius
+
+%% QUANTITY CALCULATIONS
+Vol = h_grain*r_grain^2*pi(); % [m^3]
+rho_p = Mass/Vol; % [kg/m^3]
+A_throat = pi()*(r_throat)^2; % [m^2]
+A_exit = pi()*(r_exit)^2; % [m^2]
+AR_sup = A_exit/A_throat; % supersonic area ratio
+
+V_burn = pi*rb_i^2*h_grain; % [m^3]
+h = h_grain;
+j = 1;
+rb = rb_i;
+% figure
+% hold on
+Isp = 0;
+while rb < r_grain && rb < h(j) % while there is unburned grain remaining
+    [A_burn(j), V_burn(j+1)] = burn_geometry(r_grain,h(j),rb,h_grain); % [m] burn area, burn cavity volume
+    Pc(j) = ((a * rho_p * A_burn(j) * cstar) / (A_throat)).^((1)/(1-n))/1e6; % [MPa] chamber pressure
+    burn_rate(j) = a*(Pc(j)*10^6)^n; % [m/s] burn rate
+    rb = rb + burn_rate(j) * t_step; % [m] updates burn displacement
+    
+    a_end = a*1.2;
+    burn_rate_end(j) = a_end*(Pc(j)*10^6)^n; % [m/s] burn rate of ends
+
+    h(j+1) = h(j) - burn_rate_end(j)*t_step*2;
+    delta_Vol = (V_burn(j+1) - V_burn(j))/t_step; % [m^3/s] rate of change in burn cavity volume
+        
+    [T_predicted(j),cstar,m_dot(j)] = thrust_calc(P_atm, Pc(j), A_exit, rho_p, burn_rate(j), A_burn(j), AR_sup, delta_Vol);
+    cstar = cstar*cstar_eff; % [m/s]
+    if j == 1
+        t(j) = t_step;
+    else
+        t(j) = t(j-1) + t_step;
+    end
+    t = [t 1];
+    T_predicted = [T_predicted 0];
+%     figure(1)
+%     plot(t(j),T_predicted(j))
+    j = j+1;
+end
+    figure(1)
+    plot(t,T_predicted)
+
+I_tot = trapz(t,convforce([T_predicted],'lbf','N')); %Total Impulse N/s
+Isp = I_tot/(mean(m_dot)*9.81); %Specific Impulse seconds
+
+I_tot_claimed = trapz(T_claimed(:,1),T_claimed(:,2));
+I_tot_claimed = convforce([I_tot_claimed],'lbf','N');
+
+Test_Data = load('Thrust_data.TXT');
+Data = find(Test_Data(:,1) > 2.3);
+test_t = Test_Data(Data,2) - Test_Data(Data(1),2);
+test_t = test_t/1000;
+test_thrust = Test_Data(Data,1);
+figure(1)
+hold on
+plot(test_t,test_thrust)
+grid on
+grid minor
+title('Vendor VS Calculated VS Measured Thrust (lbf)')
+xlabel('Time (s)')
+ylabel('Thrust (lbf)')
+legend('Vendor Data','Calculated Thrust','Measured Data')
+
+%calculate shit for Q 11
+delta_m = 24.6370; %grams
+delta_m = delta_m/1000;
+m_dot = delta_m/test_t(end);
+test_force = convforce([test_thrust],'lbf','N');
+I_tot_exp = trapz(test_t,test_force);
+Isp_exp = I_tot_exp/(m_dot*9.81);
+
+C_star_test = max(Pc)*1e6*A_throat/(m_dot);

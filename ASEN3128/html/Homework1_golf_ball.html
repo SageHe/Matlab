@@ -1,0 +1,315 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Homework1_golf_ball</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-28"><meta name="DC.source" content="Homework1_golf_ball.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%ASEN 3128 Homework 1</span>
+<span class="comment">%Author:Sage Herrin, SID 106071909</span>
+<span class="comment">%Created:1/25/19</span>
+<span class="comment">%Modified:1/27/19</span>
+<span class="comment">%Use ode45 to model flight of a golf ball with initial velocity and</span>
+<span class="comment">%position and takes in to account drag</span>
+clear <span class="string">all</span>;
+close <span class="string">all</span>;
+clc
+<span class="comment">%Declare variables to be used and make global</span>
+<span class="keyword">global</span> g cd m D N_0 E_0 D_0 vN_0 vE_0 vD_0 rho area q_0 V_E0 R_E W
+g = 9.81; <span class="comment">%m/s</span>
+cd = 0.6; <span class="comment">%drag coeff</span>
+m = .03; <span class="comment">%mass in kg</span>
+D = 3e-2; <span class="comment">%diameter of ball</span>
+V_E0 = [0 20 -20];
+<span class="comment">% vN_0 = 0; %initial N component of velocity</span>
+<span class="comment">% vE_0 = 20; %initial E component of velocity in m/s</span>
+<span class="comment">% vD_0 = -20; %initial D component of velocity in m/s</span>
+R_E = [0 0 0];
+<span class="comment">% N_0 = 0; %initial N position</span>
+<span class="comment">% E_0 = 0; %initial E position</span>
+<span class="comment">% D_0 = 0; %initial D position</span>
+W = [0 0 0];
+rho = 1.225; <span class="comment">%air density</span>
+area = pi*(D/2)^2;
+KE = .5*m*(norm(V_E0)^2); <span class="comment">% Compute initial kinetic energy to reamain constant throughout simulation</span>
+m = .01;
+distance = []; <span class="comment">%initialize distance vector</span>
+mass = []; <span class="comment">%initialize mass vector</span>
+<span class="keyword">for</span> i = 1:10
+    V = (KE*2)/m; <span class="comment">%equal to v^2</span>
+    V = sqrt(V/2); <span class="comment">%velocity corresponding to current mass to keep kinetic energy constant</span>
+    V_E0 = [0 V -V]; <span class="comment">%Inertial velocity vector</span>
+    inish_condish = [V_E0 R_E]; <span class="comment">%initial velocity and position of golf ball</span>
+    tspan = [0 5];
+    options = odeset(<span class="string">'MaxStep'</span>, 10^-1);
+    [t, y] = ode45(<span class="string">'golfball_fun'</span>,tspan,inish_condish,options); <span class="comment">%call ode45 to numerically integrate differential equations</span>
+
+    ground = find(-y(:,6)&lt;0); <span class="comment">%find index of first vertical position less than 0</span>
+    ground = ground(1) - 1; <span class="comment">%define ground as last vertical position before it becomes negative, equal to when ball hits ground</span>
+
+
+    vn = y(1:ground,1); <span class="comment">%N velocity component of ball</span>
+    ve = y(1:ground,2); <span class="comment">%E velocity component of ball</span>
+    vd = -y(1:ground,3); <span class="comment">%D velocity component of ball</span>
+    n = y(1:ground,4); <span class="comment">%N position of ball</span>
+    e = y(1:ground,5); <span class="comment">%E position of ball</span>
+    d = -y(1:ground,6); <span class="comment">%D position of ball</span>
+
+
+    figure(1) <span class="comment">%Plot the flight path of the ball with variation in mass</span>
+    hold <span class="string">on</span>
+    plot3(n,e,d)
+<span class="comment">%     axis equal</span>
+    xlabel(<span class="string">'N [M]'</span>)
+    ylabel(<span class="string">'E [M]'</span>)
+    zlabel(<span class="string">'-D [M]'</span>)
+    title(<span class="string">'Variation of Flight Path Due to Mass With Zero Wind'</span>)
+    legend(<span class="string">'0.01 Kg'</span>,<span class="string">'0.02 Kg'</span>,<span class="string">'0.03 Kg'</span>,<span class="string">'0304 Kg'</span>,<span class="string">'0.05 Kg'</span>,<span class="string">'0.06 Kg'</span>,<span class="string">'0.07 Kg'</span>,<span class="string">'0.08 Kg'</span>,<span class="string">'0.09 Kg'</span>,<span class="string">'0.1 Kg'</span>)
+    mass = [mass m];
+    m = m + .01; <span class="comment">%iteratively increases mass each time ode45 is called</span>
+    distance = [distance e(end)];
+<span class="keyword">end</span>
+m = .03;
+figure(3) <span class="comment">%Plot the maximum distance traveled by the ball vs mass of the ball</span>
+grid <span class="string">on</span>
+grid <span class="string">minor</span>
+plot(mass,distance)
+title(<span class="string">'Mass of Ball VS Distance Traveled in E direction'</span>)
+xlabel(<span class="string">'Mass [Kg]'</span>)
+ylabel(<span class="string">'Distance in E direction [M]'</span>)
+deflection = []; <span class="comment">%initialize deflection and wind vectors</span>
+wind_vec = [];
+V_E0 = [0 20 -20]; <span class="comment">%reinitialize velocity vector</span>
+<span class="keyword">for</span> i = 1:10
+    inish_condish = [V_E0 R_E]; <span class="comment">%give initial conditions</span>
+    tspan = [0 5];
+    options = odeset(<span class="string">'MaxStep'</span>, 10^-1);
+    [t, y] = ode45(<span class="string">'golfball_fun'</span>,tspan,inish_condish,options);
+
+    ground = find(-y(:,6)&lt;0); <span class="comment">%define when ball hits the ground</span>
+    ground = ground(1) - 1;
+
+
+    vn = y(1:ground,1); <span class="comment">%separate velocity and position into components</span>
+    ve = y(1:ground,2);
+    vd = -y(1:ground,3);
+    n = y(1:ground,4);
+    e = y(1:ground,5);
+    d = -y(1:ground,6);
+
+
+    figure(2) <span class="comment">%plot flight path of ball with variation in wind</span>
+    hold <span class="string">on</span>
+    plot3(n,e,d)
+<span class="comment">%     axis equal</span>
+    xlabel(<span class="string">'N [M]'</span>)
+    ylabel(<span class="string">'E [M]'</span>)
+    zlabel(<span class="string">'-D [M]'</span>)
+    title(<span class="string">'Variation of Flight Path Due to Change in Wind'</span>)
+    legend(<span class="string">'0 m/s'</span>,<span class="string">'2 m/s'</span>,<span class="string">'4 m/s'</span>,<span class="string">'6 m/s'</span>,<span class="string">'8 m/s'</span>,<span class="string">'10 m/s'</span>,<span class="string">'12 m/s'</span>,<span class="string">'14 m/s'</span>,<span class="string">'16 m/s'</span>,<span class="string">'18 m/s'</span>)
+    wind_vec = [wind_vec W(1)];
+    deflection = [deflection n(end)];
+    W(1) = W(1) + 1;
+<span class="keyword">end</span>
+chenge = gradient(deflection,wind_vec);
+figure(4)
+plot(wind_vec,chenge)
+title(<span class="string">'Deflection Rate in M per M/s of wind'</span>)
+xlabel(<span class="string">'Wind [M/s]'</span>)
+ylabel(<span class="string">'Deflection Rate [M per M/s]'</span>)
+</pre><pre class="codeoutput">Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+Warning: Ignoring extra legend entries. 
+</pre><img vspace="5" hspace="5" src="Homework1_golf_ball_01.png" alt=""> <img vspace="5" hspace="5" src="Homework1_golf_ball_02.png" alt=""> <img vspace="5" hspace="5" src="Homework1_golf_ball_03.png" alt=""> <img vspace="5" hspace="5" src="Homework1_golf_ball_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%ASEN 3128 Homework 1
+%Author:Sage Herrin, SID 106071909
+%Created:1/25/19
+%Modified:1/27/19
+%Use ode45 to model flight of a golf ball with initial velocity and
+%position and takes in to account drag
+clear all;
+close all;
+clc
+%Declare variables to be used and make global
+global g cd m D N_0 E_0 D_0 vN_0 vE_0 vD_0 rho area q_0 V_E0 R_E W 
+g = 9.81; %m/s
+cd = 0.6; %drag coeff
+m = .03; %mass in kg
+D = 3e-2; %diameter of ball
+V_E0 = [0 20 -20];
+% vN_0 = 0; %initial N component of velocity
+% vE_0 = 20; %initial E component of velocity in m/s
+% vD_0 = -20; %initial D component of velocity in m/s
+R_E = [0 0 0];
+% N_0 = 0; %initial N position
+% E_0 = 0; %initial E position
+% D_0 = 0; %initial D position
+W = [0 0 0];
+rho = 1.225; %air density
+area = pi*(D/2)^2;
+KE = .5*m*(norm(V_E0)^2); % Compute initial kinetic energy to reamain constant throughout simulation 
+m = .01;
+distance = []; %initialize distance vector
+mass = []; %initialize mass vector 
+for i = 1:10
+    V = (KE*2)/m; %equal to v^2
+    V = sqrt(V/2); %velocity corresponding to current mass to keep kinetic energy constant 
+    V_E0 = [0 V -V]; %Inertial velocity vector
+    inish_condish = [V_E0 R_E]; %initial velocity and position of golf ball
+    tspan = [0 5];
+    options = odeset('MaxStep', 10^-1);
+    [t, y] = ode45('golfball_fun',tspan,inish_condish,options); %call ode45 to numerically integrate differential equations
+
+    ground = find(-y(:,6)<0); %find index of first vertical position less than 0
+    ground = ground(1) - 1; %define ground as last vertical position before it becomes negative, equal to when ball hits ground
+
+
+    vn = y(1:ground,1); %N velocity component of ball
+    ve = y(1:ground,2); %E velocity component of ball
+    vd = -y(1:ground,3); %D velocity component of ball
+    n = y(1:ground,4); %N position of ball
+    e = y(1:ground,5); %E position of ball
+    d = -y(1:ground,6); %D position of ball
+
+
+    figure(1) %Plot the flight path of the ball with variation in mass
+    hold on
+    plot3(n,e,d) 
+%     axis equal
+    xlabel('N [M]')
+    ylabel('E [M]')
+    zlabel('-D [M]')
+    title('Variation of Flight Path Due to Mass With Zero Wind')
+    legend('0.01 Kg','0.02 Kg','0.03 Kg','0304 Kg','0.05 Kg','0.06 Kg','0.07 Kg','0.08 Kg','0.09 Kg','0.1 Kg')
+    mass = [mass m];
+    m = m + .01; %iteratively increases mass each time ode45 is called 
+    distance = [distance e(end)];
+end
+m = .03; 
+figure(3) %Plot the maximum distance traveled by the ball vs mass of the ball
+grid on
+grid minor
+plot(mass,distance)
+title('Mass of Ball VS Distance Traveled in E direction')
+xlabel('Mass [Kg]')
+ylabel('Distance in E direction [M]')
+deflection = []; %initialize deflection and wind vectors  
+wind_vec = [];
+V_E0 = [0 20 -20]; %reinitialize velocity vector
+for i = 1:10
+    inish_condish = [V_E0 R_E]; %give initial conditions 
+    tspan = [0 5];
+    options = odeset('MaxStep', 10^-1);
+    [t, y] = ode45('golfball_fun',tspan,inish_condish,options);
+
+    ground = find(-y(:,6)<0); %define when ball hits the ground 
+    ground = ground(1) - 1;
+
+
+    vn = y(1:ground,1); %separate velocity and position into components 
+    ve = y(1:ground,2);
+    vd = -y(1:ground,3);
+    n = y(1:ground,4);
+    e = y(1:ground,5);
+    d = -y(1:ground,6);
+
+
+    figure(2) %plot flight path of ball with variation in wind
+    hold on
+    plot3(n,e,d) 
+%     axis equal
+    xlabel('N [M]')
+    ylabel('E [M]')
+    zlabel('-D [M]')
+    title('Variation of Flight Path Due to Change in Wind')
+    legend('0 m/s','2 m/s','4 m/s','6 m/s','8 m/s','10 m/s','12 m/s','14 m/s','16 m/s','18 m/s')
+    wind_vec = [wind_vec W(1)];
+    deflection = [deflection n(end)];
+    W(1) = W(1) + 1;
+end
+chenge = gradient(deflection,wind_vec);
+figure(4)
+plot(wind_vec,chenge)
+title('Deflection Rate in M per M/s of wind')
+xlabel('Wind [M/s]')
+ylabel('Deflection Rate [M per M/s]')
+
+##### SOURCE END #####
+--></body></html>

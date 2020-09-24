@@ -1,0 +1,1 @@
+readinput('11bars.inp')

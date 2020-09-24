@@ -1,0 +1,29 @@
+Sage Herrin, SID #106071909, Homework #7, due 12/4/17 
+Problem 1 pole values of transfer function: 
+0.911 
+1.307 
+-0.978 
+-0.978 
+-0.131 
+-0.131 
+Problem 2 Average surface temperature values in Fahrenheit: 
+-1167.3559 
+656.8798 
+255.2381 
+255.2381 
+Problem 3 X,Y, and Z coefficients, respectively, solved for using Gaussian substitution without pivoting: 
+0.8000 
+-0.9333 
+0.6000 
+X,Y, and Z coefficients, respectively, solved for using backslash method with time elapsed: 
+0.8000 
+-0.9333 
+0.6000 
+Time ellasped to perform calculation in seconds: 
+0.000072 
+X,Y, and Z coefficients, respectively, solved for using inverse method with time elapsed: 
+0.8000 
+-0.9333 
+0.6000 
+Time ellasped to perform calculation in seconds: 
+0.003202 

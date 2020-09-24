@@ -1,0 +1,1 @@
+truss2d('4PointDesign2.txt','Output.txt');
