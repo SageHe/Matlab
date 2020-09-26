@@ -149,7 +149,7 @@ yy = (90-el).*cos(az*pi/180);
 xx = (90-el).*sin(az*pi/180);
 
 % plot data on top of grid
-q = plot(xx,yy,'.k','MarkerSize',4);
+q = plot(xx,yy,'.k','MarkerSize',4,'MarkerSize',8);
 
 % Place satellite PRN numbers with satellite position 
 for i = 1:length(svs)
