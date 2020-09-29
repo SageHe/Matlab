@@ -39,7 +39,7 @@ z = [6 4 -3]';
 %From lecture 11 slide 9, using form z = B*a, with RB=I -> R^-1 = B
 %-> z = B*a -> R*z = R*B*a = a -> R*z = a
 a = R*z;
-%%Problem 5.47
+%% Problem 5.47
 y1 = [1 1 1 1]';
 y2 = [1 9.9989998e-1 1 1]';
 y3 = [-2 -1.9999000 -2 -2]';
