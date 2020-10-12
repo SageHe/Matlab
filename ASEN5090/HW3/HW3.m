@@ -19,7 +19,7 @@ ECEF2ENU = calcECEF2ENU(lambda,phi);
 %             -sind(phi)*cosd(lambda) -sind(phi)*sind(lambda) cosd(phi);...
 %             cosd(phi)*cosd(lambda) cosd(phi)*sind(lambda) sind(phi)];
 NISTENU = ECEF2ENU*NISTECEF'; 
-%% Problem 3 -- Write a function that takes as input ECEF opsitoin of a user on the ground and the ECEF
+%% Problem 3 -- Write a function that takes as input ECEF positoin of a user on the ground and the ECEF
 %position of a GPS satellite, and outputs the LOS unit vector pointing from
 %the user to the satellite, expressed in ENU coords. wrt the user location
 %on the Earth.
@@ -27,7 +27,7 @@ userpos_ECEF = [-1288398 -4721697 4078625];
 satECEF = 2*userpos_ECEF;
 LOS_ENU = compute_LOS_ENU(userpos_ECEF,satECEF);
 LOS_ENU = LOS_ENU/norm(LOS_ENU);
-%% Problem 4 -- Write a func. that coputes the geometrical range (m), azimuth (deg), and elevation (deg) of a 
+%% Problem 4 -- Write a func. that computes the geometrical range (m), azimuth (deg), and elevation (deg) of a 
 % GPS satellite based on the ECEF locations of a user and GPS satellite.
 % Make up an example to check your func.
 [AZ, EL, RANGE] = compute_azelrange(userpos_ECEF, satECEF);
