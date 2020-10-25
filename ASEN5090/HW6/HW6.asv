@@ -23,8 +23,8 @@ epoch1 = data;
 rinex_tvec = epoch1(1,2);
 Weeknum_vec = epoch1(1);
 % epoch1 = rinex_data.data(1:10,:);
-f1 = 1575.42;
-f2 = 1227.6;
+f1 = 1575.42e6;
+f2 = 1227.6e6;
 for i = 1:size(epoch1,1)
     [PIF(i),~] = ionocorr(epoch1(i,4),f1,epoch1(i,8),f2);
     [health_eph(i,:),pos_eph(i,:)] = broadcast_eph2pos_etc(ephem_data,[Weeknum_vec rinex_tvec],epoch1(i,3));
@@ -48,7 +48,7 @@ for i = 1:size(epoch1,1)
     range = R;
     end
     exp_range(i) = range;
-    [az_corr(i),el_corr(i),~] = compute_azelrange(NISTECEF,ECEF_rot);
+    [az_corr(i),el_corr(i),~] = compute_azelrange(NISTECEF,ECEF_rot(i,:));
     tropo(i) = tropomodel(el_corr(i),2);
 end
 % Part 3 -- construct and print A or G matrix using ECEF coords of GPS sats
@@ -57,10 +57,13 @@ for i = 1:10
     G(i,1) = -((ECEF_rot(i,1)-NISTECEF(1))/exp_range(i));
     G(i,2) = -((ECEF_rot(i,2)-NISTECEF(2))/exp_range(i));
     G(i,3) = -((ECEF_rot(i,3)-NISTECEF(3))/exp_range(i));
+    G(i,4) = 1;
 end
 %% Part 4 -- Compute and print prefit residuals correcting for ionospheric dealy, sat. clock, relativity, and tropo. delay
 dy = PIF - (exp_range - bsv - relsv + tropo);
+dy = dy';
 %% Part 5 -- plot residuals as a function of the sat. elevation angle
 figure
 plot(el_corr,dy)
 %% Part 6 -- Form least squares solution for delta x state vector
+dx = inv(G'*G)*G'*dy;

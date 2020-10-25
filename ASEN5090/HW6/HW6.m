@@ -23,13 +23,13 @@ epoch1 = data;
 rinex_tvec = epoch1(1,2);
 Weeknum_vec = epoch1(1);
 % epoch1 = rinex_data.data(1:10,:);
-f1 = 1575.42;
-f2 = 1227.6;
+f1 = 1575.42e6;
+f2 = 1227.6e6;
 for i = 1:size(epoch1,1)
     [PIF(i),~] = ionocorr(epoch1(i,4),f1,epoch1(i,8),f2);
     [health_eph(i,:),pos_eph(i,:)] = broadcast_eph2pos_etc(ephem_data,[Weeknum_vec rinex_tvec],epoch1(i,3));
     [az,el,range] = compute_azelrange(NISTECEF,pos_eph(i,:));
-    for j = 1:3
+    for j = 1:2
     Tt = rinex_tvec' - (range./C);
     % Tt = pos2_eph - (range2'./C);
     %Compute satellite position at Tt in ECEF at Tt based on broadcast
@@ -41,14 +41,14 @@ for i = 1:size(epoch1,1)
     for k = 1:length(Tt)
         ECEF_rot(i,:) = [cos(phi(k)) sin(phi(k)) 0;...
                         -sin(phi(k)) cos(phi(k)) 0;...
-                        0 0 1]*pos_ephTt(k,:)';
-    R(k) = norm(ECEF_rot(k,:) - NISTECEF);               
+                        0 0 1]*pos_ephTt(i,:)';
+    R(k) = norm(ECEF_rot(i,:) - NISTECEF);               
     end
     diff = abs(R - range);
     range = R;
     end
     exp_range(i) = range;
-    [az_corr(i),el_corr(i),~] = compute_azelrange(NISTECEF,ECEF_rot);
+    [az_corr(i),el_corr(i),~] = compute_azelrange(NISTECEF,ECEF_rot(i,:));
     tropo(i) = tropomodel(el_corr(i),2);
 end
 % Part 3 -- construct and print A or G matrix using ECEF coords of GPS sats
@@ -57,10 +57,15 @@ for i = 1:10
     G(i,1) = -((ECEF_rot(i,1)-NISTECEF(1))/exp_range(i));
     G(i,2) = -((ECEF_rot(i,2)-NISTECEF(2))/exp_range(i));
     G(i,3) = -((ECEF_rot(i,3)-NISTECEF(3))/exp_range(i));
+    G(i,4) = 1;
 end
 %% Part 4 -- Compute and print prefit residuals correcting for ionospheric dealy, sat. clock, relativity, and tropo. delay
 dy = PIF - (exp_range - bsv - relsv + tropo);
+dy = dy';
 %% Part 5 -- plot residuals as a function of the sat. elevation angle
 figure
-plot(el_corr,dy)
+plot(el_corr,dy,'*')
+ylim([0 100])
 %% Part 6 -- Form least squares solution for delta x state vector
+dx = (G'*G)\G'*dy;
+%% Part 7 -- 
