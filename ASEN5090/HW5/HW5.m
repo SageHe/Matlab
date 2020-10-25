@@ -4,7 +4,7 @@ clear all;close all;clc
 %Load in ephem data
 ephem_data = read_clean_GPSbroadcast('brdc2450.20n',true);
 %Load in rinex file
-rinex_data = read_rinex_obs8('nist2450.20o',6);
+rinex_data = read_rinex_obs8('nist2450.20o',1);
 P2_vals = rinex_data.data(:,8);
 rinex_tvec = rinex_data.data(:,2);
 
@@ -14,7 +14,7 @@ Tow = (0:30:24*3600) + dow*24*3600;
 Tow_hr = (Tow - dow*24*3600)/3600;
 
 Weeknum_vec = Weeknum*ones(size(rinex_tvec,1),1);
-[health_eph,pos_eph] = broadcast_eph2pos(ephem_data,[Weeknum_vec rinex_tvec],6);
+[health_eph,pos_eph] = broadcast_eph2pos(ephem_data,[Weeknum_vec rinex_tvec],1);
 NISTECEF = [-1288398.360 -4721697.040 4078625.5];
 
 for i = 1:length(rinex_tvec)
@@ -30,7 +30,7 @@ for j = 1:3
     % Tt = pos2_eph - (range2'./C);
     %Compute satellite position at Tt in ECEF at Tt based on broadcast
     %ephemeris
-    [health_ephTt,pos_ephTt,bsv,relsv] = broadcast_eph2pos_etc(ephem_data,[Weeknum_vec Tt'],6);
+    [health_ephTt,pos_ephTt,bsv,relsv] = broadcast_eph2pos_etc(ephem_data,[Weeknum_vec Tt'],1);
     %Rotation rate of Earth
     We = 7.2921151467e-5; %rads/sec, (hypertextbook)
     phi = We*(rinex_tvec' - Tt);
