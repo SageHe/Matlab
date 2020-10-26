@@ -65,6 +65,11 @@ dy = dy';
 %% Part 5 -- plot residuals as a function of the sat. elevation angle
 figure
 plot(el_corr,dy,'*')
+grid on
+grid minor
+xlabel('Elevation (deg)')
+ylabel('Prefit Residuals (m)')
+title('Prefit Residuals VS Elevation Angle')
 ylim([0 100])
 %% Part 6 -- Form least squares solution for delta x state vector
 dx = (G'*G)\G'*dy;
@@ -72,6 +77,7 @@ dx = (G'*G)\G'*dy;
 % Compute A matix and pre-fit residuals based on this assumed pos.. Compute
 % least squares correction and iterate soln. 5 times. 
 userECEF = [0 0 0];
+% userECEF = [-1288398.360 -4721697.040 4078625.5];
 b = 0;
 db = 0;
 for h = 1:5
@@ -113,6 +119,11 @@ for h = 1:5
     dy = dy';
 
     dx = (G'*G)\G'*dy;
-    userECEF = userECEF + dx(1:3);
+    userECEF = userECEF + dx(1:3)';
     db = dx(4);
 end
+%% Part 8 -- Compute transformation matrix from ECEF to ENU for assumed location
+%Convert position error from from ECEF to ENU coordinates. 
+NISTLLA = ecef2lla(NISTECEF);
+C_ecef2enu = calcECEF2ENU(NISTLLA(1),NISTLLA(2));
+pos_error = C_ecef2enu*(userECEF - NISTECEF)';
