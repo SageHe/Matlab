@@ -52,8 +52,7 @@ end
 figure; stairs(0:1022,Auto); xlim([-10 1030])
 title('Autocorrelation Function for Maximal Length Code')
 xlabel('Shift/Delay (Chips)');ylabel('Correlation')
-y = [CA CA CA CA CA];
+
 Tchip = 1/chiprate;
 ind = floor(tvec/Tchip)+1;
-ysamp = y(ind);
-plot_scope_spectrum_analyzer(3,tvec,ysamp,1e-4, [0 6*chiprate], [-100 0])
+ysamp = 
