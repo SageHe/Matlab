@@ -7,8 +7,6 @@ C = [-0.0066667 0 -8 8;0.0001 -0.0001 0.12 -3.12];
 D = [0.0066667 0;-0.0001 3];
 
 [V,Deig] = eig(A);
-%(2) Modes of plant are span of eigenvectors (each complex conjugate pair)
-
 
 %Eigenspaces don't exist in real plane becuase all eigenvectors are complex, so can't
 %span subspace R4 that system lives in 
@@ -16,17 +14,18 @@ D = [0.0066667 0;-0.0001 3];
 %     ES(:,i) = null(A - D(i,i)*eye(4,4));
 % end
 % set up state space system
-%Modal space is the span of the 
+%Modal space is the span of the linear combinations of real and imaginary
+%parts of eigenvecs
 sys = ss(A,B,C,D);
 t = linspace(0,10,500);
 u = zeros(numel(t),2);
 T = [real(V(:,1)) imag(V(:,1)) real(V(:,3)) imag(V(:,3))];
 x01 = T*(real(V(:,1)) + imag(V(:,1)));
-[y,~,xM1] = lsim(sys,u,t,x01);
+[y1,~,xM1] = lsim(sys,u,t,x01);
 figure
-sgtitle('Timed Response for Initial Conditions')
+sgtitle('Timed Response for Initial Conditions, Mode 1')
 subplot(2,2,1)
-plot(t,xM1(:,1))
+plot(t,xM1(:,1),'Linewidth',4)
 grid on 
 grid minor
 xlabel('Time (s)')
@@ -50,10 +49,13 @@ grid minor
 xlabel('Time (s)')
 ylabel('Velocity (m/s)')
 
+fig = gcf;    %or one particular figure whose handle you already know, or 0 to affect all figures
+set( findall(fig, '-property', 'fontsize'), 'fontsize', 18)
+
 x02 = T*(real(V(:,3)) + imag(V(:,3)));
-[y,~,xM2] = lsim(sys,u,t,x02);
+[y2,~,xM2] = lsim(sys,u,t,x02);
 figure
-sgtitle('Timed Response For Initial Conditions')
+sgtitle('Timed Response For Initial Conditions, Mode 2')
 subplot(2,2,1)
 plot(t,xM2(:,1))
 grid on 
@@ -79,6 +81,30 @@ grid minor
 xlabel('Time (s)')
 ylabel('Velocity (m/s)')
 
+fig = gcf;    %or one particular figure whose handle you already know, or 0 to affect all figures
+set( findall(fig, '-property', 'fontsize'), 'fontsize', 18)
+
+figure
+sgtitle('System output response for mode 1 and mode 2')
+subplot(2,1,1)
+plot(t,y1(:,1))
+hold on
+plot(t,y2(:,1))
+xlabel('Time (s)')
+ylabel('a_d')
+legend('Mode 1','Mode 2')
+grid on
+grid minor
+
+subplot(2,1,2)
+plot(t,y1(:,2))
+hold on
+plot(t,y2(:,2))
+xlabel('Time (s)')
+ylabel('a_b')
+legend('Mode 1','Mode 2')
+grid on
+grid minor
 %% Part 2
 % make P matrix for reachability
 P = [B A*B A^2*B A^3*B];
@@ -87,11 +113,15 @@ P = [B A*B A^2*B A^3*B];
 % compute Qr matrix necessary to find reachability grammian
 t0 = 0;
 t1 = 0.5;
+tcont = linspace(t0,t1,500);
 Qr = -(expm(-A*(t1-t0))*B*B'*expm(-A'*(t1-t0)) - B*B');
 G = lyap(-A,Qr);
 for i = 1:4
     zeta = -(Q(:,i));
     min_energy(i) = zeta'*inv(G)*zeta;
+    for j = 1:length(t)
+        opencontsig(:,j,i) = B'*expm(A'*-tcont(j))*inv(G)*zeta;
+    end
 end
 
 %% Part 3
@@ -123,9 +153,9 @@ x0mat = Tdes*eye(4);
 [y4des,~,xM4des] = lsim(newsys,u,t,x0mat(:,4));
 % create cell arrays of plot and subplots names 
 yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
-plottitles = {'y_{k_2}','y_{k_1}','v_{m_2}','v_{m_1}'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
 xM = {xM1des xM2des xM3des xM4des};
-sptitles = {'Unit Perturbation for f_{k_2}','Unit Perturbation for f_{k_1}','Unit Perturbation for v_{m_2}','Unit Perturbation for v_{m_1}'}; 
+sptitles = {'Response to Unit Perturbation for f_{k_2}(0)=1','Response to Unit Perturbation for f_{k_1}(0)=1','Response to Unit Perturbation for v_{m_2}(0)=1','Response to Unit Perturbation for v_{m_1}(0)=1'}; 
 for i = 1:4
     figure
     for j = 1:4
@@ -161,6 +191,89 @@ for i = 1:size(ucon4,2)
     contsig4(i) = norm(ucon4(:,i));
 end
 contsig = [trapz(t,contsig1) trapz(t,contsig2) trapz(t,contsig3) trapz(t,contsig4)];
+figure
+plot(t,ucon1(1,:))
+hold on
+plot(t,ucon1(2,:))
+plot(tcont,opencontsig(1,:,1))
+plot(tcont,opencontsig(2,:,1))
+grid on
+grid minor
+xlabel('Time (s)')
+ylabel('u')
+title('Minimum energy VS closed-loop control signals, 1st orthonormal basis vector direction')
+legend('f_a,closed-loop','v_w,closed-loop','f_a,min. energy','v_w,min. energy')
+
+figure
+plot(t,ucon2(1,:))
+hold on
+plot(t,ucon2(2,:))
+plot(tcont,opencontsig(1,:,2))
+plot(tcont,opencontsig(2,:,2))
+grid on
+grid minor
+xlabel('Time (s)')
+ylabel('u')
+title('Minimum energy VS closed-loop control signals, 2nd orthonormal basis vector direction')
+legend('f_a,closed-loop','v_w,closed-loop','f_a,min. energy','v_w,min. energy')
+
+figure
+plot(t,ucon3(1,:))
+hold on
+plot(t,ucon3(2,:))
+plot(tcont,opencontsig(1,:,3))
+plot(tcont,opencontsig(2,:,3))
+grid on
+grid minor
+xlabel('Time (s)')
+ylabel('u')
+title('Minimum energy VS closed-loop control signals, 3rd orthonormal basis vector direction')
+legend('f_a,closed-loop','v_w,closed-loop','f_a,min. energy','v_w,min. energy')
+
+figure
+% set(findall(gcf,'-property','FontSize'),'FontSize',12)
+plot(t,ucon4(1,:))
+hold on
+plot(t,ucon4(2,:))
+plot(tcont,opencontsig(1,:,4))
+plot(tcont,opencontsig(2,:,4))
+grid on
+grid minor
+xlabel('Time (s)')
+ylabel('u')
+title('Minimum energy VS closed-loop control signals, 4th orthonormal basis vector direction')
+legend('f_a,closed-loop','v_w,closed-loop','f_a,min. energy','v_w,min. energy')% figure
+
+fig = gcf;    %or one particular figure whose handle you already know, or 0 to affect all figures
+set( findall(fig, '-property', 'fontsize'), 'fontsize', 18)
+
+% plot(t,contsig1)
+% xlabel('Time (s)')
+% ylabel('u')
+% title('Control signal VS Time, 1st orthonormal basis vector direction perturbation')
+% grid on 
+% grid minor
+% figure
+% plot(t,contsig2)
+% xlabel('Time (s)')
+% ylabel('u')
+% title('Control signal VS Time, 2nd orthonormal basis vector direction perturbation')
+% grid on 
+% grid minor
+% figure
+% plot(t,contsig3)
+% xlabel('Time (s)')
+% ylabel('u')
+% title('Control signal VS Time, 3rd orthonormal basis vector direction perturbation')
+% grid on 
+% grid minor
+% figure
+% plot(t,contsig4)
+% xlabel('Time (s)')
+% ylabel('u')
+% title('Control signal VS Time, 4th orthonormal basis vector direction perturbation')
+% grid on 
+% grid minor
 %% Part 5
 % create gain matrix F s.t ref. inputs are accurately tracked by
 % corresponding outputs at low freq.
@@ -179,9 +292,52 @@ utn = F*ut' - K*xt';
 ytn = yt' - D*utn;
 ytn = ytn';
 figure
+sgtitle('Unit Step Input Responses, 1st Input')
+subplot(1,2,1)
 plot(t,ytn(:,1))
-figure
+xlabel('Time (s)')
+ylabel('a_d')
+title('System output response to unit input VS time')
+grid on
+grid minor
+subplot(1,2,2)
 plot(t,ytn(:,2))
+xlabel('Time (s)')
+ylabel('a_b')
+title('System output response to unit input VS time')
+grid on
+grid minor
+
+figure
+sgtitle('State Response to Unit Step Input, 1st Input')
+subplot(2,2,1)
+plot(t,xt(:,1))
+xlabel('Time (s)')
+ylabel('f_{k_2}')
+title('f_{k_2} response to unit step input for 1st input')
+grid on
+grid minor
+subplot(2,2,2)
+plot(t,xt(:,2))
+xlabel('Time (s)')
+ylabel('f_{k_1}')
+title('f_{k_1} response to unit step input for 1st input')
+grid on
+grid minor
+subplot(2,2,3)
+plot(t,xt(:,3))
+xlabel('Time (s)')
+ylabel('v_{m_2}')
+title('v_{m_2} response to unit step input for 1st input')
+grid on
+grid minor
+subplot(2,2,4)
+plot(t,xt(:,4))
+xlabel('Time (s)')
+ylabel('v_{m_1}')
+title('v_{m_1} response to unit step input for 1st input')
+grid on
+grid minor
 
 ut2 = zeros(numel(t),2);
 ut2((10:end),2) = 1;
@@ -191,6 +347,7 @@ ytn2 = yt2' - D*utn2;
 ytn2 = ytn2';
 
 figure
+subplot(1,2,1)
 plot(t,ytn2(:,1))
-figure
+subplot(1,2,2)
 plot(t,ytn2(:,2))
