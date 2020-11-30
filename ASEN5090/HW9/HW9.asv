@@ -7,8 +7,8 @@ userpos_ecef = lla2ecef([40.01043021 -105.24388889 1614.976]); %negative 105 due
 
 weeknum = 2130; %week 82 without modulo 1024
 tow = 591660;
-prn = [1:14 16:32];
-for i = prn
+
+for i = 1:size(gps_alm,1)
     [health(i),pos(i,:)] = broadcast_eph2pos(gps_alm,[weeknum tow],i);
     [az(i),el(i),range(i)] = compute_azelrange(userpos_ecef,pos(i,:));
 end
@@ -35,4 +35,4 @@ delayax = 0:1:5000; %change this to 5001 and see if it still works
 doppax = -10e3:500:10e3;
 
 %% Part 4
-% found 32, 1, 22, 10
+% found 31, 1, 2, 10

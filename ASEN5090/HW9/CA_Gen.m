@@ -16,7 +16,7 @@ if in == 19
 elseif in == 25
     PS = xor(G2(5),G2(7));
 elseif in == 5
-    PS = xor(G2(5),G2(7));
+    PS = xor(G2(1),G2(9));
 elseif in == 31
     PS = xor(G2(3),G2(8));
 end
