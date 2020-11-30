@@ -347,49 +347,7 @@ ytn2 = yt2' - D*utn2;
 ytn2 = ytn2';
 
 figure
-sgtitle('Unit Step Input Responses, 2nd Input')
 subplot(1,2,1)
 plot(t,ytn2(:,1))
-xlabel('Time (s)')
-ylabel('a_d')
-title('System output response to unit input VS time')
-grid on
-grid minor
 subplot(1,2,2)
 plot(t,ytn2(:,2))
-xlabel('Time (s)')
-ylabel('a_b')
-title('System output response to unit input VS time')
-grid on
-grid minor
-
-figure
-sgtitle('State Response to Unit Step Input, 2nd Input')
-subplot(2,2,1)
-plot(t,xt2(:,1))
-xlabel('Time (s)')
-ylabel('f_{k_2}')
-title('f_{k_2} response to unit step input for 2nd input')
-grid on
-grid minor
-subplot(2,2,2)
-plot(t,xt2(:,2))
-xlabel('Time (s)')
-ylabel('f_{k_1}')
-title('f_{k_1} response to unit step input for 2nd input')
-grid on
-grid minor
-subplot(2,2,3)
-plot(t,xt2(:,3))
-xlabel('Time (s)')
-ylabel('v_{m_2}')
-title('v_{m_2} response to unit step input for 2nd input')
-grid on
-grid minor
-subplot(2,2,4)
-plot(t,xt2(:,4))
-xlabel('Time (s)')
-ylabel('v_{m_1}')
-title('v_{m_1} response to unit step input for 2nd input')
-grid on
-grid minor
