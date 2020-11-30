@@ -1,6 +1,7 @@
 close all;clc
 %% Part 1 -- Visibility Prediction
 % read in given almanac data
+C =  2.99792458e8; % speed of light,m/s
 data = load('HW9data.mat');
 [gps_alm,gps_alm_cell] = read_GPSyuma('YUMA310.ALM',2);
 userpos_ecef = lla2ecef([40.01043021 -105.24388889 1614.976]); %negative 105 due to W not E
@@ -29,10 +30,33 @@ fd = 0; %Doppler fequency
 
 theta = 2*pi*(IF+fd)*tvec;
 delay = 9;
-S = comp_corr(Sr,delay,theta,numel(tvec),sampprn);
+n = numel(tvec);
+S = comp_corr(Sr,delay,tvec,sampprn,IF,fd);
 %% Part 3 -- Delay/Doppler Grid Search
-delayax = 0:1:5000; %change this to 5001 and see if it still works
+delayax = 0:1:4999; %change this to 5001 and see if it still works
 doppax = -10e3:500:10e3;
+S = zeros(numel(delayax),numel(doppax));
+for i = 1:numel(delayax)
+    for j = 1:numel(doppax)
+        S(i,j) = abs(comp_corr(Sr,delayax(i),tvec,sampprn,IF,doppax(j)));
+    end
+end    
+%% Section for plotting mesh plot    
+[X,Y] = meshgrid(delayax,doppax);
 
+normS = S./max(S(:));
+normS = normS';
+
+
+[peakdop,peakdel] = find(normS == 1);
+
+fprintf('Doppler shift: %0.2f Hz \n',doppax(peakdop))
+fprintf('Delay: %0.0f samples \n',delayax(peakdel))
+
+figure
+surf(X,Y,normS)
+xlabel('Phase Shift (samples)','FontSize',15)
+ylabel('Doppler Shift (Hz)','FontSize',15)
 %% Part 4
 % found 32, 1, 22, 10
+vis = find(el > 10);
