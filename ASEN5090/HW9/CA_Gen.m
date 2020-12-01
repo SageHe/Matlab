@@ -19,6 +19,14 @@ elseif in == 5
     PS = xor(G2(1),G2(9));
 elseif in == 31
     PS = xor(G2(3),G2(8));
+elseif in == 1
+    PS = xor(G2(2),G2(6));
+elseif in == 22
+    PS = xor(G2(6),G2(9));
+elseif in == 32
+    PS = xor(G2(4),G2(9));
+elseif in == 10
+    PS = xor(G2(2),G2(3));
 end
 %     PS = xor(G2(3),G2(6));
     PRN(i) = xor(PS,G1(end));
