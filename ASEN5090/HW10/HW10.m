@@ -1,8 +1,9 @@
 clear all;close all;clc
-%% Models and preparatoin for solution
-% Set a priori locations for NIST and USN8
-NISTECEF = [-1288398.360 -4721697.040 4078625.500];
-USN8ECEF = [1112161.9919 -4842855.0890  3985497.3152];
+%% HW 10: performance of different tropo models
+% Author: Sage Herrin 
+
+NISTECEF = [-1288398.360 -4721697.040 4078625.500];     % Set a priori locations for NIST and USN8
+USN8ECEF = [1112161.9919 -4842855.0890  3985497.3152];  
 C =  2.99792458e8; % speed of light,m/s
 % Compute transformation matrix from ecef to enu using provided locations
 % NISTLLA = ecef2lla(NISTECEF);
@@ -10,7 +11,7 @@ C =  2.99792458e8; % speed of light,m/s
 % C_ecef2enu_nist = calcECEF2ENU(NISTLLA(1),NISTLLA(2));
 % C_ecef2enu_usn8 = calcECEF2ENUUSNA8LLA(1),USN8LLA(2));
 % Set up code to loop through entire obs file, start with first few epochs while debugging
-rinex_data = read_rinex_obs8('nist2450.20o',[1:32]);
+rinex_data = read_rinex_obs8('USN82450.20o',[1:32]);
 ephem_data = read_clean_GPSbroadcast('brdc2450.20n',true);
 Weeknum_vec = rinex_data.data(1,1);
 epoch = 1;
@@ -119,24 +120,40 @@ for i = 1:size(rinex_data.data,1)-1
 %         end
     end
 end
-%% Least Squares Point Solutions
-% for i = 1:size(data,3)
-%     temp = data(:,:,i);
-%     for j = 1:size(data,1)
-%         if isnan(temp(j,:))
-%             temp(j,:) = [];
-%             continue
-%         end
-%         if ~any(temp(j,:))
-%             temp(j,:) = [];
-%             continue
-%         end
-%         G(i,1) = -((ECEF_rot(i,1)-NISTECEF(1))/exp_range(i));
-%         G(i,2) = -((ECEF_rot(i,2)-NISTECEF(2))/exp_range(i));
-%         G(i,3) = -((ECEF_rot(i,3)-NISTECEF(3))/exp_range(i));
-%         G(i,4) = 1;
-%             
-%             
-            
-            
-            
+% get rid of elevations less than 10 degrees
+del = find(el_corr < 10);
+el_corr(del) = [];
+tvec = rinex_data.data(:,2);
+tvec(end) = [];
+tvec(del) = [];
+for i = 1:numel(el_corr)
+    [T_stand(i),T_map_basic(i),T_Saas(i),T_Hop(i)] = tropos(el_corr(i),2,tvec(i));
+end
+figure
+plot(el_corr,T_stand)
+xlabel('Elevation (deg)')
+ylabel('Tropospheric Delay (m)')
+title('Tropospheric Delay VS Elevation, Simple Model')
+grid on 
+grid minor
+figure
+plot(el_corr,T_map_basic)
+xlabel('Elevation (deg)')
+ylabel('Tropospheric Delay (m)')
+title('Tropospheric Delay VS Elevation, Basic Model w/ Obliquity Factor ')
+grid on 
+grid minor
+figure 
+plot(el_corr,T_Saas)
+xlabel('Elevation (deg)')
+ylabel('Tropospheric Delay (m)')
+title('Tropospheric Delay VS Elevation, Saastomoinen Model ')
+grid on 
+grid minor
+figure
+plot(el_corr,T_Hop)
+xlabel('Elevation (deg)')
+ylabel('Tropospheric Delay (m)')
+title('Tropospheric Delay VS Elevation, Hopfield Model ')
+grid on 
+grid minor

@@ -17,7 +17,7 @@ C =  2.99792458e8; %m/s
     %}
 ephem_data = read_clean_GPSbroadcast('brdc2450.20n',true);
 
-% rinex_data = read_rinex_obs8('nist2450.20o');
+rinex_data = read_rinex_obs8('nist2450.20o');
 load('epoch1');
 epoch1 = data;
 rinex_tvec = epoch1(1,2);
