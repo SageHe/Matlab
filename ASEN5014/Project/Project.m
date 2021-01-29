@@ -291,53 +291,53 @@ ut((10:end),1) = 1;
 utn = F*ut' - K*xt';
 ytn = yt' - D*utn;
 ytn = ytn';
-figure
-sgtitle('Unit Step Input Responses, 1st Input')
-subplot(1,2,1)
-plot(t,ytn(:,1))
-xlabel('Time (s)')
-ylabel('a_d')
-title('System output response to unit input VS time')
-grid on
-grid minor
-subplot(1,2,2)
-plot(t,ytn(:,2))
-xlabel('Time (s)')
-ylabel('a_b')
-title('System output response to unit input VS time')
-grid on
-grid minor
-
-figure
-sgtitle('State Response to Unit Step Input, 1st Input')
-subplot(2,2,1)
-plot(t,xt(:,1))
-xlabel('Time (s)')
-ylabel('f_{k_2}')
-title('f_{k_2} response to unit step input for 1st input')
-grid on
-grid minor
-subplot(2,2,2)
-plot(t,xt(:,2))
-xlabel('Time (s)')
-ylabel('f_{k_1}')
-title('f_{k_1} response to unit step input for 1st input')
-grid on
-grid minor
-subplot(2,2,3)
-plot(t,xt(:,3))
-xlabel('Time (s)')
-ylabel('v_{m_2}')
-title('v_{m_2} response to unit step input for 1st input')
-grid on
-grid minor
-subplot(2,2,4)
-plot(t,xt(:,4))
-xlabel('Time (s)')
-ylabel('v_{m_1}')
-title('v_{m_1} response to unit step input for 1st input')
-grid on
-grid minor
+% figure
+% sgtitle('Unit Step Input Responses, 1st Input')
+% subplot(1,2,1)
+% plot(t,ytn(:,1))
+% xlabel('Time (s)')
+% ylabel('a_d')
+% title('System output response to unit input VS time')
+% grid on
+% grid minor
+% subplot(1,2,2)
+% plot(t,ytn(:,2))
+% xlabel('Time (s)')
+% ylabel('a_b')
+% title('System output response to unit input VS time')
+% grid on
+% grid minor
+% 
+% figure
+% sgtitle('State Response to Unit Step Input, 1st Input')
+% subplot(2,2,1)
+% plot(t,xt(:,1))
+% xlabel('Time (s)')
+% ylabel('f_{k_2}')
+% title('f_{k_2} response to unit step input for 1st input')
+% grid on
+% grid minor
+% subplot(2,2,2)
+% plot(t,xt(:,2))
+% xlabel('Time (s)')
+% ylabel('f_{k_1}')
+% title('f_{k_1} response to unit step input for 1st input')
+% grid on
+% grid minor
+% subplot(2,2,3)
+% plot(t,xt(:,3))
+% xlabel('Time (s)')
+% ylabel('v_{m_2}')
+% title('v_{m_2} response to unit step input for 1st input')
+% grid on
+% grid minor
+% subplot(2,2,4)
+% plot(t,xt(:,4))
+% xlabel('Time (s)')
+% ylabel('v_{m_1}')
+% title('v_{m_1} response to unit step input for 1st input')
+% grid on
+% grid minor
 
 ut2 = zeros(numel(t),2);
 ut2((10:end),2) = 1;
@@ -393,6 +393,16 @@ ytn2 = ytn2';
 % title('v_{m_1} response to unit step input for 2nd input')
 % grid on
 % grid minor
+
+polplucon1 = F*ut' - K*xt';
+for i = 1:size(polplucon1,2)
+    polplcontsig1(i) = norm(polplucon1(:,i));
+end
+polplucon2 = F*ut2' - K*xt2';
+for i = 1:size(polplucon2,2)
+    polplcontsig2(i) = norm(polplucon2(:,i));
+end
+polplcontsig = [trapz(t(1:102),polplcontsig1(1:102)) trapz(t(1:102),polplcontsig2(1:102))];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Project Part 2
 %part 1
@@ -416,15 +426,560 @@ en_out2 = x02'*Go*x02;
 % Design a Luenberger observer for you system for threee different
 % performance objectives
 
-eigsp2 = (1/5)*eigs;
+eigsp2 = (1/5)*eigs;        %eigenvalues for slow observer
 Lp2 = place(A',C',eigsp2);
 Lp2 = Lp2';
 
-eigsone = eigs;
-Lone = place(A',C',eigsone);
+eigsone = eigs;             %eigenvalues for equal observer
+Lone = place(A',C',eigsone);    
 Lone = Lone';
 
-eigsfive = 5*eigs;
+eigsfive = 5*eigs;          %eigenvalues for fast observer
 Lfive = place(A',C',eigsfive);
 Lfive = Lfive';
+%% Part 3
+% For each case in part 2, sim. closed loop observer/controller response to
+% a step at each ref. input, one at at a time, w/ 0 ICs in both plant and
+% observer state.
 
+%For slow observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lp2*C)];
+Bprime = [(B*F);zeros(4,2)];
+Cprime = [(C - D*K) ones(2,4)];
+Dprime = D*F;
+
+sysp2 = ss(Aprime,Bprime,Cprime,Dprime);
+[Yp2,~,Xp2] = lsim(sysp2,ut,t);
+
+utn = F*ut' - K*Xp2(:,[1:4])';
+Yp2n = Yp2' - D*utn;
+Yp2n = Yp2n';
+
+figure
+sgtitle('Slow Observer System Output, Unit Step Input in u1')
+subplot(2,1,1)
+plot(t,Yp2n(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Yp2n(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_slow_u1.eps',eps)
+
+[Yp2_2,~,Xp2_2] = lsim(sysp2,ut2,t);
+
+utn2 = F*ut2' - K*Xp2_2(:,[1:4])';
+Yp2n_2 = Yp2_2' - D*utn2;
+Yp2n_2 = Yp2n_2';
+
+figure
+sgtitle('Slow Observer System Output, Unit Step Input in u2')
+subplot(2,1,1)
+plot(t,Yp2n_2(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Yp2n_2(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_slow_u2.eps',eps)
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {Xp2 Xp2_2};
+sptitles = {'Slow Observer State Response to Unit Step Input in u_1','Slow Observer State Response to Unit Step Input in u_2'}; 
+for i = 1:2
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P3state_slow_u',num2str(i),'.eps'])
+    
+end
+
+% equal observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lone*C)];
+sysnorm = ss(Aprime,Bprime,Cprime,Dprime);
+[Ynorm,~,Xnorm] = lsim(sysnorm,ut,t);
+
+utn = F*ut' - K*Xnorm(:,[1:4])';
+Ynorm_n = Ynorm' - D*utn;
+Ynorm_n = Ynorm_n';
+
+figure
+sgtitle('Equal Observer System Output, Unit Step Input in u1')
+subplot(2,1,1)
+plot(t,Ynorm_n(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Ynorm_n(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_norm_u1.eps',eps)
+
+[Ynorm_2,~,Xnorm_2] = lsim(sysnorm,ut2,t);
+
+utn2 = F*ut2' - K*Xnorm_2(:,[1:4])';
+Ynormn_2 = Ynorm_2' - D*utn2;
+Ynormn_2 = Ynormn_2';
+
+figure
+sgtitle('Equal Observer System Output, Unit Step Input in u2')
+subplot(2,1,1)
+plot(t,Ynormn_2(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Ynormn_2(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_norm_u2.eps',eps)
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {Xnorm Xnorm_2};
+sptitles = {'Equal Observer State Response to Unit Step Input in u_1','Equal Observer State Response to Unit Step Input in u_2'}; 
+for i = 1:2
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P3state_norm_u',num2str(i),'.eps'])
+end
+
+%Fast observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lfive*C)];
+sys5 = ss(Aprime,Bprime,Cprime,Dprime);
+[Y5,~,X5] = lsim(sys5,ut,t);
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n = Y5' - D*utn;
+Y5n = Y5n';
+
+figure
+sgtitle('Fast Observer System Output, Unit Step Input in u1')
+subplot(2,1,1)
+plot(t,Y5n(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Y5n(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_fast_u1.eps',eps)
+
+[Y5_2,~,X5_2] = lsim(sys5,ut2,t);
+
+utn2 = F*ut2' - K*X5_2(:,[1:4])';
+Y5n_2 = Y5_2' - D*utn2;
+Y5n_2 = Y5n_2';
+
+figure
+sgtitle('Fast Observer System Output, Unit Step Input in u2')
+subplot(2,1,1)
+plot(t,Y5n_2(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Y5n_2(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P3out_fast_u2.eps',eps)
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {X5 X5_2};
+sptitles = {'Fast Observer State Response to Unit Step Input in u_1','Fast Observer State Response to Unit Step Input in u_2'}; 
+for i = 1:2
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P3state_fast_u',num2str(i),'.eps'],eps)
+
+end
+
+%% Part 4 
+%For each case in part 2, simulate the closed loop system response to non
+%zero ICs (w/ zero ref. input). Use zero ICs in observer and non-zero ICs
+%in plant, one state vector component at a time, with unit size.
+X0 = [eye(4);eye(4)];
+%slow observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lp2*C)];
+[Vclosed,Dclosed] = eig(Aprime);
+[T,~] = cdf2rdf(Vclosed,Dclosed);
+
+ut = zeros(500,2);
+ut2 = zeros(500,2);
+sysp2 = ss(Aprime,Bprime,Cprime,Dprime);
+
+X01 = T*X0(:,1);
+
+[Yp2,~,Xp21] = lsim(sysp2,ut,t,X0(:,1));
+
+utn = F*ut' - K*Xp2(:,[1:4])';
+Yp2n1 = Yp2' - D*utn;
+Yp2n1 = Yp2n1';
+
+X02 = T*X0(:,2);
+
+[Yp2,~,Xp22] = lsim(sysp2,ut,t,X0(:,2));
+
+utn = F*ut' - K*Xp2(:,[1:4])';
+Yp2n2 = Yp2' - D*utn;
+Yp2n2 = Yp2n2';
+
+X03 = T*X0(:,3);
+
+[Yp2,~,Xp23] = lsim(sysp2,ut,t,X0(:,3));
+
+utn = F*ut' - K*Xp2(:,[1:4])';
+Yp2n3 = Yp2' - D*utn;
+Yp2n3 = Yp2n3';
+
+X04 = T*X0(:,4);
+
+[Yp2,~,Xp24] = lsim(sysp2,ut,t,X0(:,4));
+
+utn = F*ut' - K*Xp2(:,[1:4])';
+Yp2n4 = Yp2' - D*utn;
+Yp2n4 = Yp2n4';
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {Xp21 Xp22 Xp23 Xp24};
+sptitles = {'Slow Observer Response to Unit Initial Condition f_{k_2}(0)=1','Slow Observer Response to Unit Initial Condition f_{k_1}(0)=1','Slow Observer Response to Unit Initial Condition v_{m_2}(0)=1','Slow Observer Response to Unit Initial Condition v_{m_1}(0)=1'}; 
+for i = 1:4
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P4state_slow_IC',num2str(i),'.eps'],eps)
+end
+
+%equal observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lone*C)];
+[Vclosed,Dclosed] = eig(Aprime);
+T = cdf2rdf(Vclosed,Dclosed);
+sysnorm = ss(Aprime,Bprime,Cprime,Dprime);
+
+X01 = T*X0(:,1);
+
+[Ynorm,~,Xnorm1] = lsim(sysnorm,ut,t,X0(:,1));
+
+utn = F*ut' - K*Xnorm(:,[1:4])';
+Ynorm_n1 = Ynorm' - D*utn;
+Ynorm_n1 = Ynorm_n1';
+
+X02 = T*X0(:,2);
+
+[Ynorm,~,Xnorm2] = lsim(sysnorm,ut,t,X0(:,2));
+
+utn = F*ut' - K*Xnorm(:,[1:4])';
+Ynorm_n2 = Ynorm' - D*utn;
+Ynorm_n2 = Ynorm_n2';
+
+X03 = T*X0(:,3);
+
+[Ynorm,~,Xnorm3] = lsim(sysnorm,ut,t,X0(:,3));
+
+utn = F*ut' - K*Xnorm(:,[1:4])';
+Ynorm_n3 = Ynorm' - D*utn;
+Ynorm_n3 = Ynorm_n3';
+
+X04 = T*X0(:,4);
+
+[Ynorm,~,Xnorm4] = lsim(sysnorm,ut,t,X0(:,4));
+
+utn = F*ut' - K*Xnorm(:,[1:4])';
+Ynorm_n4 = Ynorm' - D*utn;
+Ynorm_n4 = Ynorm_n4';
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {Xnorm1 Xnorm2 Xnorm3 Xnorm4};
+sptitles = {'Equal Observer Response to Unit Initial Condition f_{k_2}(0)=1','Equal Observer Response to Unit Initial Condition f_{k_1}(0)=1','Equal Observer Response to Unit Initial Condition v_{m_2}(0)=1','Equal Observer Response to Unit Initial Condition v_{m_1}(0)=1'}; 
+for i = 1:4
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P4state_norm_IC',num2str(i),'.eps'],eps)
+end
+%Fast observer
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lfive*C)];
+[Vclosed,Dclosed] = eig(Aprime);
+T = cdf2rdf(Vclosed,Dclosed);
+sys5 = ss(Aprime,Bprime,Cprime,Dprime);
+
+X01 = T*X0(:,1);
+
+[Y5,~,X51] = lsim(sys5,ut,t,X0(:,1));
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n1 = Y5' - D*utn;
+Y5n1 = Y5n1';
+
+X02 = T*X0(:,2);
+
+[Y5,~,X52] = lsim(sys5,ut,t,X0(:,2));
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n2 = Y5' - D*utn;
+Y5n2 = Y5n2';
+
+X03 = T*X0(:,3);
+
+[Y5,~,X53] = lsim(sys5,ut,t,X0(:,3));
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n3 = Y5' - D*utn;
+Y5n3 = Y5n3';
+
+X04 = T*X0(:,4);
+
+[Y5,~,X54] = lsim(sys5,ut,t,X0(:,4));
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n4 = Y5' - D*utn;
+Y5n4 = Y5n4';
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {X51 X52 X53 X54};
+sptitles = {'Fast Observer Response to Unit Initial Condition f_{k_2}(0)=1','Fast Observer Response to Unit Initial Condition f_{k_1}(0)=1','Fast Observer Response to Unit Initial Condition v_{m_2}(0)=1','Fast Observer Response to Unit Initial Condition v_{m_1}(0)=1'}; 
+for i = 1:4
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P4state_fast_IC',num2str(i),'.eps'],eps)
+end
+%% Part 5
+%Use LQR to design optimal state feedback gain K for plant s.t closed loop
+%evals have time contants at least as short as slowest mode designed in
+%project 1, and redesign input matrix F if necessary to preserve accurate
+%DC tracking of ref. inputs by plant outputs
+Q = C'*C;
+R = eye(2);
+[K,S,CLP] = lqr(A,B,Q,R);
+
+F = inv(C*inv(-A+B*K)*B);
+
+ut = zeros(numel(t),2);
+ut((10:end),1) = 1;
+
+Aprime = [(A - B*K) B*K;zeros(4) (A - Lfive*C)];
+Bprime = [(B*F);zeros(4,2)];
+Cprime = [(C - D*K) ones(2,4)];
+Dprime = D*F;
+
+[V5,D5] = eig(Aprime);
+sys5 = ss(Aprime,Bprime,Cprime,Dprime);
+[Y5,~,X5] = lsim(sys5,ut,t);
+
+utn = F*ut' - K*X5(:,[1:4])';
+Y5n = Y5' - D*utn;
+Y5n = Y5n';
+
+figure
+sgtitle('Fast Observer System Output, Step Input in u1')
+subplot(2,1,1)
+plot(t,Y5n(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Y5n(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P5out_fast_u1.eps',eps)
+
+ut2 = zeros(numel(t),2);
+ut2((10:end),2) = 1;
+
+[Y5_2,~,X5_2] = lsim(sys5,ut2,t);
+
+utn2 = F*ut2' - K*X5_2(:,[1:4])';
+Y5n_2 = Y5_2' - D*utn2;
+Y5n_2 = Y5n_2';
+
+figure
+sgtitle('Fast Observer System Output, Step Input in u2')
+subplot(2,1,1)
+plot(t,Y5n_2(:,1))
+xlabel('Time (s)')
+ylabel('Output a_d (N)')
+title('a_d')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,Y5n_2(:,2))
+xlabel('Time (s)')
+ylabel('Output a_b (N)')
+title('a_b')
+grid on
+grid minor
+
+saveas(gca,'P5out_fast_u2.eps',eps)
+
+yax = {'Force (N)','Force (N)','Velocity (m/s)','Velocity (m/s)'};
+plottitles = {'f_{k_2}','f_{k_1}','v_{m_2}','v_{m_1}'};
+xM = {X5 X5_2};
+sptitles = {'Fast Observer State Response to Unit Step Input in u_1','Fast Observer State Response to Unit Step Input in u_2'}; 
+for i = 1:2
+    figure
+    for j = 1:4
+        subplot(2,2,j)
+        plot(t,xM{i}(:,j))
+        yl = ylim;
+        ylim([min(-abs(yl)),max(abs(yl))])
+        xlabel('Time (s)')
+        ylabel(yax{j})
+        title(plottitles{j})
+        grid on
+        grid minor
+    end
+    sgtitle(sptitles{i});
+    saveas(gca,['P5state_fast_u',num2str(i),'.eps'],eps)
+end
+
+lqrucon1 = F*ut' - K*X5(:,[1:4])';
+for i = 1:size(lqrucon1,2)
+    lqrcontsig1(i) = norm(lqrucon1(:,i));
+end
+lqrucon2 = F*ut2' - K*X5_2(:,[1:4])';
+for i = 1:size(lqrucon2,2)
+    lqrcontsig2(i) = norm(lqrucon2(:,i));
+end
+
+lqrcontsig = [trapz(t(1:71),lqrcontsig1(1:71)) trapz(t(1:71),lqrcontsig2(1:71))];
+
+figure
+subplot(2,1,1)
+plot(t,polplucon1(1,:))
+hold on
+plot(t,lqrucon1(1,:))
+xlabel('Time (s)')
+ylabel('Control Signal u')
+title('Pole Placement VS LQR Control Signal u1')
+legend('Pole Placement Control','LQR Control')
+grid on
+grid minor
+subplot(2,1,2)
+plot(t,polplucon2(2,:))
+hold on
+plot(t,lqrucon2(2,:))
+xlabel('Time (s)')
+ylabel('Control Signal u')
+title('Pole Placement VS LQR Control Signal u2')
+legend('Pole Placement Control','LQR Control')
+grid on
+grid minor
+sgtitle('LQR VS Pole Placement control signals')
+
+saveas(gca,'P5Contens.png')
