@@ -197,7 +197,7 @@ We = 7.2921158553e-5; %Earth rotation rate, rads/s
 phi0 = deg2rad(122);
 for i = 1:numel(t)
     phi = phi0 + We*t(i);
-    C = [cos(phi) -sin(phi) 0;sin(phi) cos(phi) 0;0 0 1];
+    C = [cos(-phi) -sin(-phi) 0;sin(-phi) cos(-phi) 0;0 0 1];
     ECEFpos(:,i) = C*y(i,1:3)';
     ECEFvel(:,i) = C*y(i,4:6)';
 end
