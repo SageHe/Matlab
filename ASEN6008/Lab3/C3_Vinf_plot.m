@@ -20,4 +20,4 @@ grid on
 grid minor
 xlabel('Transfer Duration (Days)')
 ylabel('$V_{\infty}$','Interpreter','latex')
-title('$V_{\infty}$ at Mars','Interpreter','latex')
+title('$V_{\infty}$ at Mars VS Transfer Duration','Interpreter','latex')
