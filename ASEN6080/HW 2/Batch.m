@@ -107,7 +107,7 @@ j = j + 1;
 end
     
 for i = 1:numel(t)
-    P_plus(:,:,i) = inv(Lambda(:,:,i)); %might need to implement square root method here due to singular matrix
+    P_plus(:,:,i) = pinv(Lambda(:,:,i)); %might need to implement square root method here due to singular matrix
 end
     
     

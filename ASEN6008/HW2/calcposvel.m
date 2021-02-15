@@ -1,5 +1,6 @@
-function [R,V] = calcposvel(a,e,i,omega,womega,nu);
-mu = 3.986004415e5;
+function [R,V] = calcposvel(a,e,i,omega,womega,nu,mu);
+% mu = 3.986004415e5;
+% mu = 1.32712440018e11;
 ehat = [(cosd(womega)*cosd(omega))-(cosd(i)*sind(womega)*sind(omega));...
         (cosd(womega)*sind(omega))+(cosd(i)*sind(womega)*cosd(omega));...
         (sind(womega)*sind(i))];
