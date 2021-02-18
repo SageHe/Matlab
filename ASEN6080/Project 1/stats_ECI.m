@@ -7,5 +7,7 @@ for i = 1:size(stats_ecef,1)
     Xs_ECI(i,1:3) = C*stats_ecef(i,:)';
 %     Xs_ECI(i,4:6) = cross([0 0 We],Xs_ECI(i,1:3));
     Xs_ECI(i,4:6) = C*(cross([0 0 We],[stats_ecef(i,:)]))';
+
+
 end
 end

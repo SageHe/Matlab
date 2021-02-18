@@ -1,9 +1,9 @@
-syms x y z xdot ydot zdot xs ys zs xsdot ysdot zsdot
-
+syms x y z xdot ydot zdot xs ys zs xsdot ysdot zsdot We
+%need to change Vs to be dependent on xs ys zs (cross product)
 R = [x y z];
 Rs = [xs ys zs];
 V = [xdot ydot zdot];
-Vs = [xsdot ysdot zsdot];
+Vs = cross([0 0 We],Rs);
 
 rho = norm(R - Rs);
 rdiff = R - Rs;
