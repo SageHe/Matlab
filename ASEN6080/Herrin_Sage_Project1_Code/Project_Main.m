@@ -1658,7 +1658,7 @@ statspos_ecef = [stat101pos_ecef;stat337pos_ecef;stat394pos_ecef];
 
 Xs_ECI = stats_ECI(statspos_ecef,0,theta0);
 
-P0 = diag([1 1 1 1 1 1 1e2 1e6 1e6 1 1 1 1 1 1 1e-16 1e-16 1e-16]);
+P0 = diag([1 1 1 1 1 1 1e2 1e6 1e6 1 1 1 1 1 1 1 1 1]);
 R = diag([1e-10 1e-12]);
 
 x0 = [757.700 5222.607 4851.5000 2.21321 4.67834 -5.37130 mu_e J2 CD Xs_ECI(1,1:3) Xs_ECI(2,1:3) Xs_ECI(3,1:3)]';
@@ -2047,7 +2047,7 @@ statspos_ecef = [stat101pos_ecef;stat337pos_ecef;stat394pos_ecef];
 
 Xs_ECI = stats_ECI(statspos_ecef,0,theta0);
 
-P0 = diag([1 1 1 1 1 1 1e2 1e6 1 1 1 1 1 1 1 1e-16 1e-16 1e-16]);
+P0 = diag([1 1 1 1 1 1 1e2 1e6 1 1 1 1 1 1 1 1 1 1]);
 R = diag([1e-10 1e-12]);
 
 x0 = [757.700 5222.607 4851.5000 2.21321 4.67834 -5.37130 mu_e J2 CD Xs_ECI(1,1:3) Xs_ECI(2,1:3) Xs_ECI(3,1:3)]';

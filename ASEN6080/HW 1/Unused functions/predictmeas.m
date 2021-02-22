@@ -1,4 +1,4 @@
-function [y,El] = predictmeas(x_sc,x_obs,t)
+function y = predictmeas(x_sc,x_obs,t)
 R = [x_sc(1) x_sc(2) x_sc(3)];
 % Rs = [x_obs(1) x_obs(2) x_obs(3)];
 V = [x_sc(4) x_sc(5) x_sc(6)];
@@ -14,18 +14,9 @@ y = zeros(1,2*size(x_obs,1));
 % Rs_ECI = C*Rs;
 % Vs_ECI = cross([0 0 We],Rs_ECI);
 for i = 1:size(x_obs,1)
-    rho = (R - x_obs(i,1:3));
-    normangle = acos((dot(rho,x_obs(i,1:3)))/(norm(rho)*norm(x_obs(i,1:3))));
-    el = 90 - rad2deg(normangle);
-    if el < 10
-        El(i) = NaN;
-        y(2*i-1) = NaN;
-        y(2*i) = NaN;
-    else
-    El(i) = el;
-    y(2*i-1) = norm(rho);
-    y(2*i) = (dot((R - x_obs(i,1:3)),(V - x_obs(i,4:6))))/norm(rho);
-    end
+    rho = norm(R - x_obs(i,1:3));
+    y(2*i-1) = rho;
+    y(2*i) = (dot((R - x_obs(i,1:3)),(V - x_obs(i,4:6))))/rho;
     % rho = norm(R - Rs);
     % rhodot = (dot((R - Rs),(V - Vs))/rho);
 end
