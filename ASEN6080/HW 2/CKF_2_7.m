@@ -51,7 +51,7 @@ x_hat0 = x_hat0';
 Deltax_minus = zeros(n,1);
 Deltax_plus = Deltax_minus;
 Deltax0_plus = ones(n,1);
-while norm(Deltax0_plus) > 1e-8
+while j < 2 %norm(Deltax0_plus) > 1e-8
 %Initialize Filter
 ti_minus = t(1,1);
 x_t_im1 = x_hat0(:,j);
@@ -81,7 +81,7 @@ for i = 2:numel(t)
     Deltax_minus(:,i) = Phi*Deltax_plus(:,i-1);
     P_minus = Phi*P_plus*Phi';
     %Process Observations
-    [hi(i,:),~] = predictmeas(x_ti(1:6),Xs_ECI);
+    [hi(i,:)] = predictmeas(x_ti(1:6),Xs_ECI);
     ri(i,:) = yi - hi(i,:);
     
     Hi = zeros(2*numstats,n);

@@ -1,4 +1,4 @@
-clear all;close all;clc
+clear all;close all;
 
 syms x y z xdot ydot zdot mu J2 r R
 %Define r and gravitational potential function for J2

@@ -45,7 +45,7 @@ j = 1;
 xhat0(:,j) =  x0 + dx;
 Deltax_minus(:,1) = zeros(7,1);
 Deltax_plus(:,1) = ones(7,1);
-while norm(Deltax_plus(:,end)) > 1e-7
+while j < 2%norm(Deltax_plus(:,end)) > 1e-7
 % xhat(:,1) = xhat0(:,j);
 Lambda(:,:,j) = pinv(P0);
 N = pinv(P0)*Deltax_minus;%P0\Deltax_minus; %better alternative to inv(P0)*Deltax_minus
@@ -75,13 +75,13 @@ for i = 2:numel(t)
     if ~all(isnan(yi))
         if statnum == 1%~isnan(yi(1)) || ~isnan(yi(2))
             Hi(:,1:6) = Htilde_sc_rho_rhod(xhat(i,1:6),Xs_ECI(1,:));
-           [hi(i,:),~] = predictmeas(xhat(i,1:6),Xs_ECI(1,:));
+           [hi(i,:)] = predictmeas(xhat(i,1:6),Xs_ECI(1,:));
         elseif statnum == 2%~isnan(yi(3)) || ~isnan(yi(4))
             Hi(:,1:6) = Htilde_sc_rho_rhod(xhat(i,1:6),Xs_ECI(2,:));
-           [hi(i,:),~] = predictmeas(xhat(i,1:6),Xs_ECI(2,:));
+           [hi(i,:)] = predictmeas(xhat(i,1:6),Xs_ECI(2,:));
         else 
             Hi(:,1:6) = Htilde_sc_rho_rhod(xhat(i,1:6),Xs_ECI(3,:));
-           [hi(i,:),~] = predictmeas(xhat(i,1:6),Xs_ECI(3,:));
+           [hi(i,:)] = predictmeas(xhat(i,1:6),Xs_ECI(3,:));
         end
         %accumulate observation
         ri(i,:) = yi(statnum*2-1:statnum*2) - hi(i,:);
