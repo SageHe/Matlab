@@ -2,7 +2,7 @@
 clear all;clc
 %load in measurements from HW1
 opts = odeset('RelTol',1e-12,'AbsTol',1e-12);
-load('HW1_Nom_Measurements')
+load('HW1_Nom_Measurements_V2')
 rangemeas(14319:end,:) = []; %Clean up end of measurement file that has no measurements
 rrmeas(14319:end,:) = [];
 t(14319:end) = [];
