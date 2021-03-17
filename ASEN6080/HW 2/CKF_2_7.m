@@ -28,7 +28,7 @@ rrmeasnoisy = rrmeas + rhodot_noise;
 
 %Define a priori covariance and uncertainty matrices
 P0 = diag([sigma_r^2 sigma_r^2 sigma_r^2 sigma_v^2 sigma_v^2 sigma_v^2 0]);
-R = diag([sigma_rho sigma_rhodot sigma_rho sigma_rhodot sigma_rho sigma_rhodot]);
+R = diag([sigma_rho^2 sigma_rhodot^2 sigma_rho^2 sigma_rhodot^2 sigma_rho^2 sigma_rhodot^2]);
 %calculate initial true unperturbed state
 [r,v] = calcposvel(10000,0.001,40,80,40,0);
 x0 = [r;v;J2];
@@ -51,7 +51,7 @@ x_hat0 = x_hat0';
 Deltax_minus = zeros(n,1);
 Deltax_plus = Deltax_minus;
 Deltax0_plus = ones(n,1);
-while j < 2 %norm(Deltax0_plus) > 1e-8
+while norm(Deltax0_plus) > 1e-8
 %Initialize Filter
 ti_minus = t(1,1);
 x_t_im1 = x_hat0(:,j);
@@ -97,13 +97,17 @@ for i = 2:numel(t)
     %Measurement update
     Deltax_plus(:,i) = Deltax_minus(:,i) + Ki*(ri(i,:)' - Hi*Deltax_minus(:,i));
     P_plus = (eye(7) - Ki*Hi)*P_minus*(eye(7) - Ki*Hi)' + Ki*R*Ki';
+    
+    covbound(i,:) = [3*sqrt(P_plus(1,1)) 3*sqrt(P_plus(2,2)) 3*sqrt(P_plus(3,3)) 3*sqrt(P_plus(4,4)) 3*sqrt(P_plus(5,5)) 3*sqrt(P_plus(6,6))]; 
     %set up for next minor iteration
     ti_minus = ti;
     x_t_im1 = x_ti';
     x_hat(:,i) = x_ti' + Deltax_plus(:,i);
 %     Pi_mi = P_plus;
 %     Deltax_i_m1_plus = Deltaxi_plus;
-    
+    posnorm(i,:) = norm(x_hat(1:3,i)' - X_true(i,1:3));
+    velnorm(i,:) = norm(x_hat(4:6,i)' - X_true(i,4:6));
+
     
 end
 Phi = eye(n);
@@ -122,32 +126,66 @@ state_error = x_hat - X_true(:,1:7)';
 state_error(7,:) = [];
 state_error = state_error';
 figure
-subplot(6,1,1)
+subplot(3,1,1)
+hold on
 plot(t,state_error(:,1))
+% plot(t,covbound(:,1),'--r')
+% plot(t,-covbound(:,1),'--r')
 grid on
 grid minor
-% xlabel('Time (s)')
-% ylabel('state error')
-subplot(6,1,2)
+xlabel('Time (s)')
+ylabel('\delta r_x (km)')
+subplot(3,1,2)
+hold on
 plot(t,state_error(:,2))
+% plot(t,covbound(:,2),'--r')
+% plot(t,-covbound(:,2),'--r')
 grid on
 grid minor
-% xlabel('Time (s)')
-% ylabel('y state error')
-subplot(6,1,3)
+xlabel('Time (s)')
+ylabel('\delta r_y (km)')
+subplot(3,1,3)
+hold on
 plot(t,state_error(:,3))
+% plot(t,covbound(:,3),'--r')
+% plot(t,-covbound(:,3),'--r')
+xlabel('Time (s)')
+ylabel('y state error')
 grid on
 grid minor
-subplot(6,1,4)
+xlabel('Time (s)')
+ylabel('\delta r_z (km)')
+sgtitle('Position State Error with 3\sigma Covariance Bound, CKF')
+
+figure
+subplot(3,1,1)
+hold on
 plot(t,state_error(:,4))
+% plot(t,covbound(:,4),'--r')
+% plot(t,-covbound(:,4),'--r')
 grid on
 grid minor
-subplot(6,1,5)
+xlabel('Time (s)')
+ylabel('\delta v_x (km/s)')
+subplot(3,1,2)
+hold on
 plot(t,state_error(:,5))
+% plot(t,covbound(:,5),'--r')
+% plot(t,-covbound(:,5),'--r')
 grid on
 grid minor
-subplot(6,1,6)
+xlabel('Time (s)')
+ylabel('\delta v_y (km/s)')
+subplot(3,1,3)
+hold on
 plot(t,state_error(:,6))
+% plot(t,covbound(:,6),'--r')
+% plot(t,-covbound(:,6),'--r')
 grid on
 grid minor
-sgtitle('Reference trajectory errors')
+xlabel('Time (s)')
+ylabel('\delta v_z (km/s)')
+sgtitle('Velocity State Error with 3\sigma Covariance Bound, CKF')
+
+posRMS = sqrt((1/size(x_hat,1))*sum(posnorm.^2));
+velRMS = sqrt((1/size(x_hat,1))*sum(velnorm.^2));

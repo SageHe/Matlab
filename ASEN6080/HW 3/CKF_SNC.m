@@ -1,7 +1,9 @@
 %% Homework 2 - Orbit estimation using CKF, EKF, and Batch filtering -- CKF 
-clear all;close all;clc
+clear all;clc
 % sigma = logspace(-14,-5,10);
-sigma = 4.29193426012878e-06;
+% sigma = 4.29193426012878e-06;
+% sigma = 3e-7;
+sigma = 0;
 % sigma = 8e-7;
 for ii = 1:numel(sigma)
 
@@ -9,12 +11,12 @@ for ii = 1:numel(sigma)
 
     opts = odeset('RelTol',1e-12,'AbsTol',1e-12);
     % load('HW1_Nom_Measurements_V2')
-    load('J3_Measurements')
-    % load('HW3_test_measurements')
+%     load('J3_Measurements')
+    load('HW2_Nom_Measurements')
     rangemeas(14319:end,:) = []; %Clean up end of measurement file that has no measurements
     rrmeas(14319:end,:) = [];
     t(14319:end) = [];
-    truth_state(14319:end,:) = [];
+%     truth_state(14319:end,:) = [];
     % load('HW1_Noisy_Measurements')
     J2 = 1082.63e-6;
     mu = 3.986004415e5;
@@ -38,7 +40,7 @@ for ii = 1:numel(sigma)
 
     %Define a priori covariance and uncertainty matrices
     P0 = diag([sigma_r^2 sigma_r^2 sigma_r^2 sigma_v^2 sigma_v^2 sigma_v^2]);
-    R = 4*diag([sigma_rho sigma_rhodot sigma_rho sigma_rhodot sigma_rho sigma_rhodot]);
+    R = diag([sigma_rho^2 sigma_rhodot^2 sigma_rho^2 sigma_rhodot^2 sigma_rho^2 sigma_rhodot^2]);
     %calculate initial true unperturbed state
     [r,v] = calcposvel(10000,0.001,40,80,40,0);
     Period = 2*pi*sqrt((10000^3)/mu);
@@ -128,8 +130,10 @@ for ii = 1:numel(sigma)
         else
             ri_post_plot(i,:) = NaN(1,2);
         end
-        posnorm(i,:) = norm(x_hat(1:3,i)' - truth_state(i,1:3));
-        velnorm(i,:) = norm(x_hat(4:6,i)' - truth_state(i,4:6));
+%         posnorm(i,:) = norm(x_hat(1:3,i)' - truth_state(i,1:3));
+        posnorm(i,:) = norm(x_hat(1:3,i)' - X_true(i,1:3));
+%         velnorm(i,:) = norm(x_hat(4:6,i)' - truth_state(i,4:6));
+        velnorm(i,:) = norm(x_hat(4:6,i)' - X_true(i,4:6));
     end
     Phi = eye(n);
     Phi_flat = reshape(Phi,n^2,1);
@@ -143,15 +147,15 @@ for ii = 1:numel(sigma)
     j = j + 1;
     end
 
-    state_error = x_hat - truth_state(:,1:6)';
-    % state_error(7,:) = [];
+%     state_error = x_hat - truth_state(:,1:6)';
+    state_error = x_hat - X_true(:,1:6)';
     state_error = state_error';
     figure
     subplot(3,1,1)
     hold on
     plot(t,state_error(:,1))
-    plot(t,covbound(:,1),'--r')
-    plot(t,-covbound(:,1),'--r')
+%     plot(t,covbound(:,1),'--r')
+%     plot(t,-covbound(:,1),'--r')
     grid on
     grid minor
     xlabel('Time (s)')
@@ -159,19 +163,19 @@ for ii = 1:numel(sigma)
     subplot(3,1,2)
     hold on
     plot(t,state_error(:,2))
-    plot(t,covbound(:,2),'--r')
-    plot(t,-covbound(:,2),'--r')
+%     plot(t,covbound(:,2),'--r')
+%     plot(t,-covbound(:,2),'--r')
     xlabel('Time (s)')
     ylabel('\delta r_y')
     grid on
     grid minor
-    % xlabel('Time (s)')
-    % ylabel('y state error')
+    xlabel('Time (s)')
+    ylabel('y state error')
     subplot(3,1,3)
     hold on
     plot(t,state_error(:,3))
-    plot(t,covbound(:,3),'--r')
-    plot(t,-covbound(:,3),'--r')
+%     plot(t,covbound(:,3),'--r')
+%     plot(t,-covbound(:,3),'--r')
     xlabel('Time (s)')
     ylabel('\delta r_z')
     grid on
@@ -182,8 +186,8 @@ for ii = 1:numel(sigma)
     subplot(3,1,1)
     hold on
     plot(t,state_error(:,4))
-    plot(t,covbound(:,4),'--r')
-    plot(t,-covbound(:,4),'--r')
+%     plot(t,covbound(:,4),'--r')
+%     plot(t,-covbound(:,4),'--r')
     xlabel('Time (s)')
     ylabel('\delta v_x')
     grid on
@@ -191,8 +195,8 @@ for ii = 1:numel(sigma)
     subplot(3,1,2)
     hold on
     plot(t,state_error(:,5))
-    plot(t,covbound(:,5),'--r')
-    plot(t,-covbound(:,5),'--r')
+%     plot(t,covbound(:,5),'--r')
+%     plot(t,-covbound(:,5),'--r')
     xlabel('Time (s)')
     ylabel('\delta v_y')
     grid on
@@ -200,8 +204,8 @@ for ii = 1:numel(sigma)
     subplot(3,1,3)
     hold on
     plot(t,state_error(:,6))
-    plot(t,covbound(:,6),'--r')
-    plot(t,-covbound(:,6),'--r')
+%     plot(t,covbound(:,6),'--r')
+%     plot(t,-covbound(:,6),'--r')
     xlabel('Time (s)')
     ylabel('\delta v_z')
     grid on
