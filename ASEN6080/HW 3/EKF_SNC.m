@@ -1,8 +1,9 @@
 %% Homework 2 - Orbit estimation using CKF, EKF, and Batch filtering -- EKF 
 clear all;clc
 tic
-sigma = logspace(-14,-5,15);
-% sigma = 3e-7;
+% sigma = logspace(-14,-5,15);
+% sigma = 4e-8;
+sigma = 5e-9;
 for ii = 1:numel(sigma) 
 
     %load in measurements from HW1
@@ -10,9 +11,12 @@ for ii = 1:numel(sigma)
     % load('HW1_Nom_Measurements')
     % load('HW1_Nom_Measurements_V2')
     % load('HW3_test_measurements')
-    load('J3_Measurements')
-    rangemeas(14319:end,:) = []; %Clean up end of measurement file that has no measurements
-    rrmeas(14319:end,:) = [];
+%     load('J3_Measurements')
+    load('J3_Meas_Noised')
+%     rangemeas(14319:end,:) = []; %Clean up end of measurement file that has no measurements
+%     rrmeas(14319:end,:) = [];
+    rangemeasnoisy(14319:end,:) = []; %Clean up end of measurement file that has no measurements
+    rrmeasnoisy(14319:end,:) = [];
     t(14319:end) = [];
     truth_state(14319:end,:) = [];
     % load('HW1_Noisy_Measurements')
@@ -27,18 +31,18 @@ for ii = 1:numel(sigma)
     %Add Gaussian noise with specified standard deviations
     sigma_rho = 1e-3;
     sigma_rhodot = 1e-6;
-    rho_noise = sigma_rho*randn(size(rangemeas,1),1);
-    rhodot_noise = sigma_rhodot*randn(size(rangemeas,1),1);
+%     rho_noise = sigma_rho*randn(size(rangemeas,1),1);
+%     rhodot_noise = sigma_rhodot*randn(size(rangemeas,1),1);
     sigma_r = 1;
     sigma_v = 1e-3;
 
-    rangemeasnoisy = rangemeas + rho_noise;
-    rrmeasnoisy = rrmeas + rhodot_noise;
+%     rangemeasnoisy = rangemeas + rho_noise;
+%     rrmeasnoisy = rrmeas + rhodot_noise;
     y = [rangemeasnoisy(:,1) rrmeasnoisy(:,1) rangemeasnoisy(:,2) rrmeasnoisy(:,2) rangemeasnoisy(:,3) rrmeasnoisy(:,3)];
     % y = [rangemeas(:,1) rrmeas(:,1) rangemeas(:,2) rrmeas(:,2) rangemeas(:,3) rrmeas(:,3)];
 
     %Define a priori covariance and uncertainty matrices
-    P0 = diag([sigma_r^2 sigma_r^2 sigma_r^2 sigma_v^2 sigma_v^2 sigma_v^2]);
+    P0 = 50*diag([sigma_r^2 sigma_r^2 sigma_r^2 sigma_v^2 sigma_v^2 sigma_v^2]);
     R = diag([1e-6 1e-12]);
     %calculate initial true unperturbed state
     [r,v] = calcposvel(10000,0.001,40,80,40,0);
@@ -55,7 +59,8 @@ for ii = 1:numel(sigma)
     % dx = zeros(7,1);
     % dx = [.5 .5 .5 1e-7 1e-7 1e-7 0]';
     % dx = [-.8949639 -0.266738025 -0.667648229 0.0012933487 -0.00051752255 0.00015225489 0]';
-    dx = [0.5 -0.5 0.5 0.5e-7 -0.5e-7 0.5e-7]';
+    dx = 50*[0.5 -0.5 0.5 0.5e-7 -0.5e-7 0.5e-7]';
+%     dx = [5 -5 5 0.5e-6 -0.5e-6 0.5e-6]';
     % j = 1;
     % initialize filter
     x_hat0(1,:) = x0 + dx;
@@ -137,7 +142,7 @@ for ii = 1:numel(sigma)
     plot(t,x_hat(:,1) - truth_state(:,1))
     plot(t,covbounds(:,1),'--r')
     plot(t,-covbounds(:,1),'--r')
-    ylim([-.5 .5])
+%     ylim([-.5 .5])
     grid on
     xlabel('Tims (s)')
     ylabel('\delta r_x')
@@ -146,7 +151,7 @@ for ii = 1:numel(sigma)
     plot(t,x_hat(:,2) - truth_state(:,2))
     plot(t,covbounds(:,2),'--r')
     plot(t,-covbounds(:,2),'--r')
-    ylim([-.5 .5])
+%     ylim([-.5 .5])
     grid on
     xlabel('Tims (s)')
     ylabel('\delta r_y')
@@ -155,7 +160,7 @@ for ii = 1:numel(sigma)
     plot(t,x_hat(:,3) - truth_state(:,3))
     plot(t,covbounds(:,3),'--r')
     plot(t,-covbounds(:,3),'--r')
-    ylim([-.5 .5])
+%     ylim([-.5 .5])
     grid on
     xlabel('Tims (s)')
     ylabel('\delta r_z')
@@ -194,13 +199,15 @@ for ii = 1:numel(sigma)
     figure
     subplot(2,1,1)
     plot(t,ri(:,1),'*')
-    ylim([-.002 .002])
+%     ylim([-.002 .002])
+    ylim([-0.01 0.01])
     xlabel('Time (s)')
     ylabel('Range')
     grid on
     subplot(2,1,2)
     plot(t,ri(:,2),'*')
-    ylim([-.5e-5 .5e-5])
+%     ylim([-.5e-5 .5e-5])
+    ylim([-1e-5 1e-5])
     xlabel('Time (s)')
     ylabel('Range Rate')
     grid on

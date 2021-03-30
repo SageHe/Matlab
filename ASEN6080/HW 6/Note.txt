@@ -1,0 +1,4 @@
+left off defining ECI states and still need to define gamma and sigma,
+should sigma be computed from Pi_minus(I think yes). Gamma calcualted
+from lambda and n, lambda calculated from alpha, kappa, and n 
+(see lec. 15 page 5)
