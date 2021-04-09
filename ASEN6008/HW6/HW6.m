@@ -21,7 +21,7 @@ EGA1Ephem = Meeus(Event.EGA1);
 
 V_inf_in_EGA1 = v_sc_EGA1 - Vp_EGA1;
 
-%Calculate hyperbolic excess velocity of S/C up departure at EGA1
+%Calculate hyperbolic excess velocity of S/C upon departure at EGA1
 EGA2Ephem = Meeus(Event.EGA2);
 JOIEphem = Meeus(Event.JOI);
 
