@@ -10,7 +10,7 @@ clear all;close all;clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Launch-Venus PCP
 
-%Defien specified event dates
+%Define specified event dates
 Event.LaunchJD = 2447807.5;
 Event.VGAJD =  2447932.5;
 Event.EGA1JD = 2448235.5;
@@ -184,7 +184,8 @@ V_inf_in_JOI = v_sc_JOI - Vp_JOI;
 P_Earth = 2*365.242189*86400;
 a = ((P_Earth/(2*pi))^2*mu_S)^(1/3);
 V_sc_post_EGA1 = sqrt(mu_S*((2/norm(R_EGA1)) - (1/a)));
-V_inf = (norm(V_inf_out_EGA2) + norm(V_inf_in_EGA1))/2;
+% V_inf = (norm(V_inf_out_EGA2) + norm(V_inf_in_EGA1))/2;
+V_inf = norm(V_inf_in_EGA1);
 V_sc_sun = sqrt((2*mu_S)/norm(R_EGA1) - (mu_S/a));
 
 num = -norm(V_sc_sun)^2 + V_inf^2 + norm(Vp_EGA1)^2;

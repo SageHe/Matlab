@@ -82,7 +82,7 @@ flyby_alt = rp - R_Jupiter;
 Helio_dv = V_sc_JGA_out - V_sc_JGA;
 %% Part II
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PCSs -- Construct 2 PCPs, one of available trajectories between launch
+% PCPs -- Construct 2 PCPs, one of available trajectories between launch
 % and JGA, and one between JGA and PCE
 %Part 1 -- Launch-JGA trjaectory possibilities
 mu = 1.32712440018e11; %mu of sun

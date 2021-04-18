@@ -1,5 +1,5 @@
 %{ 
-Multi-Rev Lambert solver -- solves for traj. conecting two position vectors given a TOF.
+Lambert solver -- solves for traj. conecting two position vectors given a TOF.
 Inputs: Initial pos. vector, final pos. vector, desired TOF, direction of
 Motion (optional)
 %}
@@ -37,7 +37,7 @@ psi_low = -4*pi;
 
 its = 1;
 
-while abs(dt - TOF) > 1e-5
+while abs(dt - TOF) > 1e-3
     y = norm(r0) + norm(rf) + (A*(psi*C3 - 1))/sqrt(C2);
     
     if A > 0.0 && y < 0.0
