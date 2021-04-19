@@ -3,17 +3,20 @@ clear all;close all;clc
 % Construct PCPs for each segment of the mission to narrow down valid
 % critical event dates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Launch-Venus PCP
+%% Launch-Venus PCP
 
 %Define specified event dates
 Event.LaunchJD = 2460744.5;
 % Event.VGAJD = 2460866.5;
-Event.VGAJD = 2460870.5;
+% Event.VGAJD = 2460870.5;
+Event.VGAJD = 2460901.5;
 % Event.EGA1JD = 2461140.5;
-Event.EGA1JD = 2461221.5;
+% Event.EGA1JD = 2461221.5;
+Event.EGA1JD = 2461252.5;
 % Event.EGA2JD = 2461840.5;
-Event.EGA2JD = 2462317.226567;
-Event.SOIJD = 2463901.5;
+Event.EGA2JD = 2462348.226567;
+% Event.SOIJD = 2463901.5;
+Event.SOIJD = 2463953.5;
 
 mu = 1.32712440018e11; %mu of sun
 Dep_Dates = [Event.LaunchJD - 68:Event.LaunchJD + 45];
@@ -30,8 +33,10 @@ for j = 1:numel(Dep_Dates)
         dt(i,j) = Arr_Dates(i) - Dep_Dates(j);
     end
 end
+fprintf('done\n')
 % [I,J] = find(vinf_Venus == 5.91399779657392);
-% % [I,J] = find(C3 == min(min(C3)));
+% [I,J] = find(C3 == min(min(C3)));
+% 
 % clear vinf_Venus C3
 % Dep_Date = Dep_Dates(23);
 % Arr_Date = Arr_Dates(50);
@@ -69,7 +74,7 @@ ylabel('Days Past 21 Jan 1990')
 legend('C3 $\frac{km^2}{s^2}$','$V_{\infty,Venus}$,$\frac{km}{s}$','TOF, days','Min C3','FontSize',18,'Interpreter','latex')
 title('Earth-Venus Pork Chop Plot','FontSize',24)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Venus-EGA1 PCP
+%% Venus-EGA1 PCP
 clear vinf_Venus
 
 mu = 1.32712440018e11; %mu of sun
@@ -85,11 +90,9 @@ for j = 1:numel(Dep_Dates)
         vinf_Venus(i,j) = norm(V_initial - V_Venus);
         vinf_Earth(i,j) = norm(V_final - V_Earth);
         dt(i,j) = Arr_Dates(i) - Dep_Dates(j);
-        i 
-        j
     end
 end
-
+fprintf('done\n')
 x_vals = Dep_Dates - Dep_Dates(1);
 y_vals = Arr_Dates - Arr_Dates(1);
 
@@ -111,7 +114,7 @@ ylabel('Days Past 4 Apr 1990')
 legend('$V_{\infty,Venus}$,$\frac{km}{s}$','$V_{\infty,Earth}$,$\frac{km}{s}$','TOF, days','FontSize',18,'Interpreter','latex')
 title('Venus-EGA1 Galileo Pork Chop Plot','FontSize',24)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% EGA2-SOI PCP
+%% EGA2-SOI PCP
 clear vinf_Earth dt
 % Event.EGA2JD = 2461951.984378;
 mu = 1.32712440018e11; %mu of sun
@@ -171,9 +174,9 @@ Rs = 60268;
 % Event.EGA2 = 2460534.226567;
 % Event.JOI = 2461300.75;
 
-Event.VGAJD = 2460870.5;
-Event.EGA1JD = 2461221.5;
-Event.EGA2JD = 2462317.226567;
+% Event.VGAJD = 2460870.5;
+% Event.EGA1JD = 2461221.5;
+% Event.EGA2JD = 2462317.226567;
 
 % Calculate hyperbolic excess velocity of S/C upon arrivalt at EGA1
 VGA1Ephem = Meeus(Event.VGAJD);
