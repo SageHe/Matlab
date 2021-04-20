@@ -24,7 +24,7 @@ Vel_NonDim = Vel.*(TimeUnit/AU);
 %% Problem 2
 %Integrate states for their respective prop. times and plot each traj. in
 %rotating frame
-DistanceUnit = 84747.962856037;
+DistanceUnit = 384747.962856037;
 mu = 0.012150585609624;
 ICs = [1.2 0 0 0 -1.06110124 0 6.20628;...
         0.85 0 0.17546505 0 0.2628980369 0 2.5543991];
