@@ -68,7 +68,8 @@ Ccen = (2*e - e^3/4 + 5/96*e^5)*sin(M) + (5/4*e^2 - 11/24*e^4)*sin(2*M) + ...
 
 nu = M + Ccen;
 
-[R V] = COEstoRV(a,e,inc,W,w,nu,mu_s);
+% [R V] = COEstoRV(a,e,inc,W,w,nu,mu_s);
+[R,V] = calcposvel(a,e,rad2deg(inc),rad2deg(W),rad2deg(w),rad2deg(nu),mu_s);
 
 % Convert to EME2000 if necessary
 if strcmpi(Frame,'EME2000')
