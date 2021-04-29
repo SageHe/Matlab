@@ -9,44 +9,48 @@ for ii = 1:numel(sigma)
     %load in measurements for part 2
     load('2a_meas')
     load('Project2_Prob2_truth_traj_50days');
-%     rangemeas(14319:end,:) = []; %Clean up end of measurement file that has no measurements
-%     rrmeas(14319:end,:) = [];
-
+    
+    data = formatmeas(refmat_data);
+    t = data(:,1);
     %Calculate station positions in ECEF -- STATION 2 LONGITUDE IS NEGATIVE
     %ONLY FOR COMPARISON TO EXAMPLE TRUTH DATA!!!
     
     Re = 6378.1363; %earth radius in km
     theta0 = deg2rad(0);
-    stat1pos_ecef = [Re*cosd(-35.398333)*cosd(148.981944);Re*cosd(-35.398333)*sind(148.981944);Re*sind(-35.398333)]; 
-    stat2pos_ecef = [Re*cosd(40.427222)*cosd(-355.749444);Re*cosd(40.427222)*sind(-355.749444);Re*sind(40.427222)];
-    stat3pos_ecef = [Re*cosd(35.247164)*cosd(243.205);Re*cosd(35.247164)*sind(243.205);Re*sind(35.247164)];
+    stat1pos_ecef = [(Re+h1)*cosd(-35.398333)*cosd(148.981944);(Re+h1)*cosd(-35.398333)*sind(148.981944);(Re+h1)*sind(-35.398333)]; 
+    stat2pos_ecef = [(Re+h2)*cosd(40.427222)*cosd(-355.749444);(Re+h2)*cosd(40.427222)*sind(-355.749444);(Re+h2)*sind(40.427222)];
+    stat3pos_ecef = [(Re+h3)*cosd(35.247164)*cosd(243.205);(Re+h3)*cosd(35.247164)*sind(243.205);(Re+h3)*sind(35.247164)];
     statspos_ecef = [stat1pos_ecef';stat2pos_ecef';stat3pos_ecef'];
     %define uncertainty on range and range rate (5m and 0.5 mm/s,
     %respectively)
+    sigma_r = 100;
+    sigma_v = 0.1;
+    sigma_cr = 0.1;
+    
     sigma_rho = 5e-3;
     sigma_rhodot = 0.5e-6;
     %Define a priori covariance and uncertainty matrices
-    P0 = 50*diag([sigma_r^2 sigma_r^2 sigma_r^2 sigma_v^2 sigma_v^2 sigma_v^2]);
+    P0 = diag([sigma_r sigma_r sigma_r sigma_v sigma_v sigma_v sigma_cr]);
     R = diag([2.5e-6 2.5e-13]);
     % Define initial apriori state
-    x0 = [r;v];
+    x0 = [-274096790 -92859240 -40199490 32.67 -8.94 -3.88 1.2]';
     n = size(x0,1);
-    dt = t(2) - t(1);
+%     dt = t(2) - t(1);
 
     Phi = eye(size(x0,1));
     Phi_flat = reshape(Phi,size(x0,1)^2,1);
     Z = [x0;Phi_flat];
-    tspan = [0:dt:t(end)];
-    [~,X_true] = ode45(@(t,Z) keplerJ2OOS_wPhi_ODE(t,Z),tspan,Z,opts);
+%     tspan = [0:dt:t(end)];
+%     [~,X_true] = ode45(@(t,Z) keplerJ2OOS_wPhi_ODE(t,Z),tspan,Z,opts);
 
     % dx = zeros(7,1);
     % dx = [.5 .5 .5 1e-7 1e-7 1e-7 0]';
     % dx = [-.8949639 -0.266738025 -0.667648229 0.0012933487 -0.00051752255 0.00015225489 0]';
-    dx = 50*[0.5 -0.5 0.5 0.5e-7 -0.5e-7 0.5e-7]';
+%     dx = 50*[0.5 -0.5 0.5 0.5e-7 -0.5e-7 0.5e-7]';
 %     dx = [5 -5 5 0.5e-6 -0.5e-6 0.5e-6]';
     % j = 1;
     % initialize filter
-    x_hat0(1,:) = x0 + dx;
+    x_hat0(1,:) = x0;
     x_hat0 = x_hat0';
     x_hat(1,:) = x_hat0;
     ti_m1 = t(1);

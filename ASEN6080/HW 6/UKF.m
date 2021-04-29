@@ -16,7 +16,7 @@ truth_state(14319:end,:) = [];
 mu = 3.986004415e5;
 J2 = 1082.63e-6;
 %process noise flag
-PN = 0;
+PN = 1;
 sigma = 5e-9;
 
 muscale = 1e-4;
@@ -66,7 +66,7 @@ x_t_im1 = x_hat0;
 x_hat_plus(:,1) = x_t_im1;
 P_plus(:,:,1) = P0;
 
-alpha = 1;
+alpha = 1e-4;
 beta = 2;
 kappa = 0;
 lambda = alpha^2*(kappa + n) - n;

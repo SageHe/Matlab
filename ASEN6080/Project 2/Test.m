@@ -2,7 +2,7 @@ clear all;close all;clc
 
 opts = odeset('RelTol',1e-12,'AbsTol',1e-12);
 load('Project2_Prob2_truth_traj_50days.mat')
-
+muE = 3.986004415e5;
 tspan = Tt_50;
 state = Xt_50(1,1:7);
 n = 7;
@@ -14,13 +14,24 @@ Z = [state';Phi_flat];
 
 [time,X] = ode45(@(t,Z) TBG_SRP_ode(t,Z,n),tspan,Z,opts);
 
+
 figure
+subplot(2,1,1)
 plot3(X(:,1),X(:,2),X(:,3))
 grid on
 grid minor
 xlabel('X (km)')
 ylabel('Y (km)')
 zlabel('Z (km')
+title('Propagated Trajectory from Initial Truth State')
+subplot(2,1,2)
+plot3(Xt_50(:,1),Xt_50(:,2),Xt_50(:,3));
+grid on
+grid minor
+xlabel('X (km)')
+ylabel('Y (km)')
+zlabel('Z (km')
+title('Provided 50 Day Truth Trajectory')
 
 figure
 subplot(3,1,1)
@@ -41,6 +52,7 @@ xlabel('Time (s)')
 ylabel('Z Pos. error (km)')
 grid on
 grid minor
+sgtitle('Positon State Error')
 
 figure
 subplot(3,1,1)
@@ -61,12 +73,24 @@ xlabel('Time (s)')
 ylabel('Z Vel. error (km/s)')
 grid on
 grid minor
+sgtitle('Velocity State Error')
+
+opts = odeset('RelTol',10e-12,'AbsTol',10e-12,'Events',@eventfunc1);
+tspan = [0 (300*24*3600)];
+X0 = Xt_50(1,1:7)';
+Z = [X0;Phi_flat];
+[t_3soi,x_3soi,te,ye,ie] = ode45(@(t,Z) TBG_SRP_ode(t,Z,n),tspan,Z,opts);
+
+rinf = ye(1:3);
+vinf = ye(4:6);
+
+% temp = Bplane_calcs(rinf,vinf);
 %% 
 opts = odeset('RelTol',1e-12,'AbsTol',1e-12);
 
 load('2a_meas')
 load('Project2_Prob2_truth_traj_50days.mat')
-
+data = formatmeas(refmat_data);
 y = refmat_data(:,2:7);
 
 Re = 6378.1363; %earth radius in km
@@ -121,3 +145,4 @@ grid on
 grid minor
 xlabel('Time (days)')
 ylabel('Range Rate Res. (km/s)')
+sgtitle('Truth vs Calculated Measurement Residuals')

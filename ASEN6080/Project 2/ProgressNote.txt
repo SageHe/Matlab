@@ -1,3 +1,6 @@
-Left off getting calculated measurements to match up with provided
-measurements. Tweaked station ECEF position calcs. to include station
-altitudes, but didn't test yet.
+Left off having processed the part 3 measurements with a CKF with PN, not looking too bad now that
+I remembered to switch the sign on the madrid station longitude (heh). Should try to get either the 
+EKF initialized with the CKF working or perhaps the SRIF/UKF. Anthony might be able to help with 
+SRIF. Should probably first get B-plane event function and estimate working so in worst-case 
+scenario it can be used for parts 2 and 3, and calculation of B-plane at different SOIs can be used
+for 4.
