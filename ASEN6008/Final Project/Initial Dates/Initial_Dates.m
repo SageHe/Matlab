@@ -19,8 +19,8 @@ Event.EGA2JD = 2462348.226567;
 Event.SOIJD = 2463953.5;
 
 mu = 1.32712440018e11; %mu of sun
-Dep_Dates = [Event.LaunchJD - 68:2:Event.LaunchJD + 45];
-Arr_Dates = [Event.VGAJD - 45:2:Event.VGAJD + 45];
+Dep_Dates = [Event.LaunchJD - 68:Event.LaunchJD + 45];
+Arr_Dates = [Event.VGAJD - 45:Event.VGAJD + 45];
 LaunchDates = Dep_Dates;
 V_Arr_Dates = Arr_Dates;
 for j = 1:numel(Dep_Dates)
@@ -69,18 +69,19 @@ clabel(cs1,h1,'FontSize',16)
 clabel(cs2,h2,'FontSize',16)
 [cs3,h3] = contour(x_vals,y_vals,dt,dt_contours,'k','LineWidth',1);
 clabel(cs3,h3,'FontSize',16)
+plot(55,55,'*','MarkerSize',30)
 set(gca,'FontSize',20)
 xlabel('Days Past 1 Jan. 2025')
 ylabel('Days Past 30 June 2025')
-legend('C3 $\frac{km^2}{s^2}$','$V_{\infty,Venus}$,$\frac{km}{s}$','TOF, days','FontSize',18,'Interpreter','latex')
+legend('C3 $\frac{km^2}{s^2}$','$V_{\infty,Venus}$,$\frac{km}{s}$','TOF, days','Chosen Event Date','FontSize',18,'Interpreter','latex')
 title('Earth-Venus Pork Chop Plot','FontSize',24)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Venus-EGA1 PCP
 clear vinf_Venus
 
 mu = 1.32712440018e11; %mu of sun
-Dep_Dates = [Event.VGAJD - 140:2:Event.VGAJD + 150];
-Arr_Dates = [Event.EGA1JD - 140:2:Event.EGA1JD + 150];
+Dep_Dates = [Event.VGAJD - 140:Event.VGAJD + 150];
+Arr_Dates = [Event.EGA1JD - 140:Event.EGA1JD + 150];
 V_Dep_Dates = Dep_Dates;
 EGA1_Arr_Dates = Arr_Dates;
 for j = 1:numel(Dep_Dates)
@@ -124,18 +125,19 @@ clabel(cs1,h1,'FontSize',16)
 clabel(cs2,h2,'FontSize',16)
 [cs3,h3] = contour(x_vals,y_vals,dt,dt_contours,'k','LineWidth',1);
 clabel(cs3,h3,'FontSize',16)
+plot(150,115,'*','MarkerSize',30)
 set(gca,'FontSize',20)
 xlabel('Days Past 27 Mar 2025')
 ylabel('Days Past 13 Mar 2026')
-legend('$V_{\infty,Venus}$,$\frac{km}{s}$','$V_{\infty,Earth}$,$\frac{km}{s}$','TOF, days','FontSize',18,'Interpreter','latex')
+legend('$V_{\infty,Venus}$,$\frac{km}{s}$','$V_{\infty,Earth}$,$\frac{km}{s}$','TOF, days','Chosen Event Date','FontSize',18,'Interpreter','latex')
 title('Venus-EGA1 Pork Chop Plot','FontSize',24)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% EGA2-SOI PCP
 clear vinf_Earth dt
 % Event.EGA2JD = 2461951.984378;
 mu = 1.32712440018e11; %mu of sun
-Dep_Dates = [Event.EGA2JD - 120:2:Event.EGA2JD + 120];
-Arr_Dates = [Event.SOIJD - 300:2:Event.SOIJD + 300];
+Dep_Dates = [Event.EGA2JD - 120:Event.EGA2JD + 120];
+Arr_Dates = [Event.SOIJD - 300:Event.SOIJD + 300];
 EGA2_Dep_Dates = Dep_Dates;
 Sat_Arr_Dates = Arr_Dates;
 for j = 1:numel(Dep_Dates)
@@ -166,10 +168,11 @@ clabel(cs1,h1,'FontSize',16)
 clabel(cs2,h2,'FontSize',16)
 [cs3,h3] = contour(x_vals,y_vals,dt,dt_contours,'k','LineWidth',1);
 clabel(cs3,h3,'FontSize',16)
+plot(95,465,'*','MarkerSize',30)
 set(gca,'FontSize',20)
 xlabel('Days Past 1 Apr 2029')
 ylabel('Days Past 25 Feb 2033')
-legend('$V_{\infty,Earth}$,$\frac{km}{s}$','$V_{\infty,Saturn}$,$\frac{km}{s}$','TOF, days','FontSize',18,'Interpreter','latex')
+legend('$V_{\infty,Earth}$,$\frac{km}{s}$','$V_{\infty,Saturn}$,$\frac{km}{s}$','TOF, days','Chosen Event Date','FontSize',18,'Interpreter','latex')
 title('EGA2-SOI Pork Chop Plot','FontSize',24)
 %% use searching function to determine valid dates of flybys
 clear C3 dt 

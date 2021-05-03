@@ -1,0 +1,3 @@
+Looks like may need to fix possible numerical/implementation isues in CKF? Would maybe
+try running a priori state/cov through CKF from later assingment/project 2 that is more
+likely to be working

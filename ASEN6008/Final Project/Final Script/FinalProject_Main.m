@@ -138,15 +138,15 @@ mu = 1.32712440018e11; %mu of sun
 % % Construct Earth-Earth resonant orbit plot and state phi value that was
 % % selected and why
 % 
-% mu_S = 1.32712440018e11;
-% mu_E = 3.98600433e5;
-% mu_V = 3.24858599e5;
-% AU = 1.49597870700e8;
-% mu_J = 1.266865361e8;
+mu_S = 1.32712440018e11;
+mu_E = 3.98600433e5;
+mu_V = 3.24858599e5;
+AU = 1.49597870700e8;
+mu_sat = 3.7931208e7;
 % 
-% Re = 6378.14;
-% Rv = 6051.8;
-% Rj = 71492;
+Re = 6378.14;
+Rv = 6051.8;
+Rs = 60268;
 % 
 % % Event.Launch = 2458951.5;
 % % Event.VGA1 = 2459121.5;
@@ -314,19 +314,21 @@ EGA2Ephem = Meeus(Event.EGA2JD);
 SOIEphem = Meeus(Event.SOIJD);
 
 [R_EGA2,Vp_EGA2] = calcposvel(EGA2Ephem.Earth.a,EGA2Ephem.Earth.e,EGA2Ephem.Earth.i,EGA2Ephem.Earth.Omega,EGA2Ephem.Earth.w,EGA2Ephem.Earth.nu,mu);
-[R_JOI,Vp_JOI] = calcposvel(SOIEphem.Jupiter.a,SOIEphem.Jupiter.e,SOIEphem.Jupiter.i,SOIEphem.Jupiter.Omega,SOIEphem.Jupiter.w,SOIEphem.Jupiter.nu,mu);
+[R_SOI,Vp_SOI] = calcposvel(SOIEphem.Saturn.a,SOIEphem.Saturn.e,SOIEphem.Saturn.i,SOIEphem.Saturn.Omega,SOIEphem.Saturn.w,SOIEphem.Saturn.nu,mu);
 
-[v_sc_EGA2,v_sc_JOI] = solvelambert(R_EGA2,R_JOI,(Event.JOIJD - Event.EGA2JD)*86400,0);
+[v_sc_EGA2,v_sc_SOI] = solvelambert(R_EGA2,R_SOI,(Event.SOIJD - Event.EGA2JD)*86400,0);
 
 V_inf_out_EGA2 = v_sc_EGA2 - Vp_EGA2;
 
+V_inf_in_SOI = v_sc_SOI - Vp_SOI;
+
 %Construct periapse radius of gravity assist as func. of phi
 %first flyby
-P_Earth = 2*365.242189*86400;
+P_Earth = 3*365.242189*86400;
 a = ((P_Earth/(2*pi))^2*mu_S)^(1/3);
 V_sc_post_EGA1 = sqrt(mu_S*((2/norm(R_EGA1)) - (1/a)));
 % V_inf = (norm(V_inf_out_EGA1) + norm(V_inf_in_EGA1))/2;
-V_inf = norm(V_inf_in_EGA1);
+V_inf = norm(V_inf_out_EGA2);
 V_sc_sun = sqrt((2*mu_S)/norm(R_EGA1) - (mu_S/a));
 phi = deg2rad(92.2462);
 % phi = deg2rad(99.0990990990991);
@@ -416,13 +418,20 @@ rp = (mu_E/norm(V_inf_in_EGA2)^2)*((1/(cos((pi-Psi)/2))) - 1);
 
 flyby_alt = rp - Re;
 %data found from websites/papers
-a_j = 9814688.8; %km
-e_j = 0.971233;
-inc_j = 5.3; %degrees
 
-rp_j = a_j*(1 - e_j);
+% rp_s = 158500;
+rp_s = 74611.784;
+% a_j = 9814688.8; %km
+% e_j = 0.971233;
+% inc_j = 5.3; %degrees
 
-V_hyp = sqrt(((2*mu_J)/rp_j) + norm(V_inf_in_JOI)^2);
-V_el = sqrt(((2*mu_J)/rp_j) - (mu_J/a_j));
+% rp_j = a_j*(1 - e_j);
+
+V_hyp = sqrt(((2*mu_sat)/rp_s) + norm(V_inf_in_SOI)^2);
+% V_el = sqrt(((2*mu_sat)/rp_s) - (mu_sat/a_j));
+V_el = V_hyp - 0.9;
+a_s = mu_sat/(((2*mu_sat)/rp_s) - V_el^2);
+e_s = 1 - (rp_s/a_s);
+ra_s = a_s*(1 + e_s);
 
 dv = V_el - V_hyp;
