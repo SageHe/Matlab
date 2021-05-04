@@ -1,3 +1,4 @@
-Looks like may need to fix possible numerical/implementation isues in CKF? Would maybe
-try running a priori state/cov through CKF from later assingment/project 2 that is more
-likely to be working
+Looks like changing P0 pos. and vel from [1 1 1 1 1 1] to [1e-6 1e-6 1e-6 1e-10 1e-10 1e-10]
+has little effect, Batch basically no effect, might just be able to use these results
+and run with idea that both filters are relatively robust to changes in cov and data noise
+cov, with the batch being more robust than the CKF?
