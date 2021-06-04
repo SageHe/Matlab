@@ -1,4 +1,4 @@
-clear all;close all;clc
+clear all;clc
 %% Start of ASEN 6080 Project 1 main script
 %{
 Author: Sage Herrin
@@ -32,7 +32,7 @@ statspos_ecef = [stat101pos_ecef;stat337pos_ecef;stat394pos_ecef];
 Xs_ECI = stats_ECI(statspos_ecef,0,theta0);
 
 P0 = diag([1e-6 1e-6 1e-6 1e-10 1e-10 1e-10 1e2 1e6 1e6 1e-16 1e-16 1e-16 1 1 1 1 1 1]);
-R = diag([1e-10 1e-12]);
+R = 1e-3*diag([1e-10 1e-12]);
 
 x0 = [757.700 5222.607 4851.5000 2.21321 4.67834 -5.37130 mu_e J2 CD Xs_ECI(1,1:3) Xs_ECI(2,1:3) Xs_ECI(3,1:3)]';
 n = size(x0,1);
@@ -145,6 +145,7 @@ for i = 2:numel(t)
 end
 
 figure
+subplot(2,1,1)
 hold on
 plot(t,riplot(:,1),'*')
 plot(t,riplot(:,3),'*')
@@ -155,8 +156,7 @@ xlabel('Time (s)')
 ylabel('Range Residual (km)')
 title('Range Residaul VS Time')
 legend('Station 101','Station 337','Station 394')
-
-figure
+subplot(2,1,2)
 hold on
 plot(t,riplot(:,2),'*')
 plot(t,riplot(:,4),'*')
@@ -421,8 +421,8 @@ statspos_ecef = [stat101pos_ecef;stat337pos_ecef;stat394pos_ecef];
 
 Xs_ECI = stats_ECI(statspos_ecef,0,theta0);
 
-P0 = 1e3*diag([1 1 1 1 1 1 1e2 1e6 1 1e-16 1e-16 1e-16 1 1 1 1 1 1]);
-R = 1e3*diag([1e-10 1e-12]);
+P0 = diag([1e-6 1e-6 1e-6 1e-10 1e-10 1e-10 1e2 1e6 1 1e-16 1e-16 1e-16 1 1 1 1 1 1]);
+R = 1e-3*diag([1e-10 1e-12]);
 
 x0 = [757.700 5222.607 4851.5000 2.21321 4.67834 -5.37130 mu_e J2 CD Xs_ECI(1,1:3) Xs_ECI(2,1:3) Xs_ECI(3,1:3)]';
 dx = [.1 -.1 .1 0.01 -0.01 0.01 zeros(1,12)]';
